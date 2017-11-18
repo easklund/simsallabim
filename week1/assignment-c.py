@@ -83,6 +83,29 @@ def extractSign(bHalf, e):
         sign = sign * temp
     return sign
 
+#Makes a list with BClass ovjects to store which a, c, d and r that are conneced to B
+ def storeB(a, c, d, r, B):
+     lista = []
+     size = len(a)
+     for i in range(size):
+         ob = Bclass()
+         ob.setA(a[i])
+         ob.setC(c[i])
+         ob.setD(d[i])
+         ob.setR(r[i])
+         ob.setB(B[i])
+         lista.append(ob)
+     return lista
+
+ #Returns a BClass object with B as its B
+ def findB(l, B):
+     size = len(l)
+     for i in range(size):
+         if l[i].getB() == B:
+             return l[i]
+     return 0
+
+
 
 
 #hjälpfunktioner
