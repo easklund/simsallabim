@@ -79,7 +79,7 @@ def extractSign(bHalf, e):
     size = len(bHalf)
     sign = 1
     for i in range(size):
-        temp = (f(x_i, y_i))**(1/3)  #här behöver jag ha koll på vilka xy som hör till vilket b
+        temp = (f(x_i, y_i))**(1/e)  #här behöver jag ha koll på vilka xy som hör till vilket b
         sign = sign * temp
     return sign
 
