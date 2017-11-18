@@ -6,6 +6,7 @@ class Bclass:
     d_i = 0
     r_i = 0
     B_i = 0
+    taken = false
     def __init__(self, arg):
     super(Bclass, self).__init__()
     self.arg = arg
@@ -30,3 +31,5 @@ def setB(value):
     b_i = value
 def getB():
     return b_i
+def setTaken():
+    taken = true
