@@ -64,10 +64,26 @@ def banksChoise(b) :
     indexes = indexChoise(size)
     r = [0 for i in range(size/2)]
     for i in range(size):
-        #välj en random int, modulo size
-        #kolla så att indexet inte valts tidigare
         r[i] = b[indexes[i]]
     return r
+
+def computeBlindSign(bHalf, n, e):
+    size = len(bHalf)
+    blindSign = 1
+    for i in range(size):
+        temp = (bHalf[i] **(1/e)) % n
+        blindSign = blindSign * temp
+    return blindSign
+
+def extractSign(bHalf, e):
+    size = len(bHalf)
+    sign = 1
+    for i in range(size):
+        temp = (f(x_i, y_i))**(1/3)
+        sign = sign * temp
+    return sign
+
+
 
 #hjälpfunktioner
 
