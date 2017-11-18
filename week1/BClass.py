@@ -1,5 +1,5 @@
 
-class Bclass(object):
+class Bclass:
     """docstring for Bclass."""
     a_i = 0
     c_i = 0

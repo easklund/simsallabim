@@ -58,8 +58,8 @@ def indexChoise(size):
         index = random.randint(0,size) % n
         #kolla så att indexet inte valts tidigare
 
-def banksChoise(b) :
-    #banken väljer ut k av 2k
+#banken väljer ut k av 2k
+def banksChoise(b):
     size = len(b)
     indexes = indexChoise(size)
     r = [0 for i in range(size/2)]
@@ -68,6 +68,29 @@ def banksChoise(b) :
         #kolla så att indexet inte valts tidigare
         r[i] = b[indexes[i]]
     return r
+
+#Makes a list with BClass ovjects to store which a, c, d and r that are conneced to B
+def storeB(a, c, d, r, B):
+    lista = []
+    size = len(a)
+    for i in range(size):
+        ob = Bclass()
+        ob.setA(a[i])
+        ob.setC(c[i])
+        ob.setD(d[i])
+        ob.setR(r[i])
+        ob.setB(B[i])
+        lista.append(ob)
+    return lista
+
+#Returns a BClass object with B as its B
+def findB(l, B):
+    size = len(l)
+    for i in range(size):
+        if l[i].getB() == B:
+            return l[i]
+    return 0
+
 
 #hjälpfunktioner
 
