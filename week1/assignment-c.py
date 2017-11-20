@@ -51,17 +51,24 @@ def computeB(x, y, r, n, e):
         b[j] = (r[j]**e) * f(x[j], y[j])
     return b
 
-def indexChoise(size):
+def indexChoise(size, b):
     indexes = [0 for i in range(size/2)]
     for i in range(size):
+
         #välj en random int, modulo size
         index = random.randint(0,size) % n
+        myb = findB(b, b[index])
+        if myB.taken == false :
+            indexes[i] = index
+            myB.setTaken()
+        else :
+            #indexet har valts tidigar, hoppa upp i koden, hur fan gör jag det?????
         #kolla så att indexet inte valts tidigare
 
 def banksChoise(b) :
     #banken väljer ut k av 2k
     size = len(b)
-    indexes = indexChoise(size)
+    indexes = indexChoise(size, b)
     r = [0 for i in range(size/2)]
     for i in range(size):
         r[i] = b[indexes[i]]
@@ -79,7 +86,7 @@ def extractSign(bHalf, e):
     size = len(bHalf)
     sign = 1
     for i in range(size):
-        temp = (f(x_i, y_i))**(1/3)  #här behöver jag ha koll på vilka xy som hör till vilket b
+        temp = (f(x_i, y_i))**(1/e)  #här behöver jag ha koll på vilka xy som hör till vilket b
         sign = sign * temp
     return sign
 
