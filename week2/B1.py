@@ -3,18 +3,17 @@ import binascii
 
 
 def DCnet(SA, SB, DA, DB, M, b):
-    print(b)
     if b == '0' :
         DC = (hexToInt(SA)) ^ (hexToInt(SB))
         result = (hexToInt(DA)) ^ (hexToInt(DB)) ^ DC
         return intToHex(DC) + intToHex(result)
     else :
         DC = (hexToInt(SA)) ^ (hexToInt(SB))
-        result = hexToInt(DA) ^ (hexToInt(DB)) #^ ((byteToInt(~(hexToByte(DC))))
+        result = DC ^ hexToInt(M)
         return intToHex(result)
 
 def stripNetFile():
-    lista = fromFileToList('DCnet2.txt')
+    lista = fromFileToList('DCnet.txt')
     size = len(lista)
     if size == 6:
         SA = lista[0]
@@ -52,7 +51,7 @@ def hexToInt(hexa):
     integer = int(hexa, 16)
     return integer
 def intToHex(i):
-    n = format(i,'08x')
+    n = format(i,'04x')
     return n
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -60,15 +59,9 @@ def hexToByte(hexa):
 def byteToInt(byte):
     i = int.from_bytes(byte, byteorder='big', signed=True)
     return i
-
+def intToByte(integer):
+    four_bytes = integer.to_bytes(4, byteorder='big', signed=True)
+    return four_bytes
 #print(stripNetFile())
 SA, SB, DA, DB, M, b = stripNetFile()
-#print(DCnet(SA, SB, DA, DB, M, b))
-
-
-
-def test():
-    DC = (hexToInt(SA)) ^ (hexToInt(SB))
-    print(hexToByte(DC))
-
-test()
+print(DCnet(SA, SB, DA, DB, M, b))
