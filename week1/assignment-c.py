@@ -62,6 +62,7 @@ def indexChoise(size, b):
             indexes[i] = index
             myB.setTaken()
         else :
+            print("else")
             #indexet har valts tidigar, hoppa upp i koden, hur fan gör jag det?????
         #kolla så att indexet inte valts tidigare
 
@@ -91,7 +92,7 @@ def extractSign(bHalf, e):
     return sign
 
 #Makes a list with BClass ovjects to store which a, c, d and r that are conneced to B
- def storeB(a, c, d, r, B):
+def storeB(a, c, d, r, B):
      lista = []
      size = len(a)
      for i in range(size):
@@ -104,13 +105,22 @@ def extractSign(bHalf, e):
          lista.append(ob)
      return lista
 
- #Returns a BClass object with B as its B
- def findB(l, B):
+#Returns a BClass object with B as its B
+def findB(l, B):
      size = len(l)
      for i in range(size):
          if l[i].getB() == B:
              return l[i]
      return 0
+
+def returnsListToB(B, Bk):
+     size = len(Bk)
+     a = []
+     for i in range(size):
+         Bi = Bk[i]
+         a, sdr.append(findB(B, Bi))
+
+     return asdr
 
 
 
@@ -146,3 +156,28 @@ def byteToInt(byte):
 n = 3
 a, c, d, r =  generate2kq(4, 100, n)
 print(computeB(computeX(a,c), computeY(a,d, 12345), r, n, 3))
+
+def runAWithdrawel():
+    a, c, d, r =  generate2kq(4, 100, n)
+    x = computeX(a,c)
+    y = computeY(a,d, 12345)
+    B = computeB(x, y, r, n, 3)
+    lista = storeB(a, c, d, r, B)
+
+    #Bank picks k elements
+    Bk = banksChoise(B)
+
+    #Alice sends a,c,d,r back to Bank for each B_i in the list to verify
+    asdr = returnsListToB(B, Bk)
+
+    #Banken verifiera asdr
+
+
+
+
+
+
+
+
+
+runAWithdrawel()
