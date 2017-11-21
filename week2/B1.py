@@ -1,4 +1,13 @@
 
+def DCnet(SA, SB, DA, DB, M, b):
+    
+    print(b)
+    if b == '0' :
+        DC = (hexToInt(SA)) ^ (hexToInt(SB))
+        result = (hexToInt(DA)) ^ (hexToInt(DB)) ^ DC
+        return intToHex(DC) + intToHex(result)
+    else :
+        return "ej klar"
 
 def stripNetFile():
     lista = fromFileToList('DCnet.txt')
@@ -35,5 +44,14 @@ def fromFileToList(filename):
         Listan[index] =  Listan[index].replace('\n','')
     return Listan
 
+def hexToInt(hexa):
+    integer = int(hexa, 16)
+    return integer
+def intToHex(i):
+    n = format(i,'04x')
+    return n
 
-print(stripNetFile())
+
+#print(stripNetFile())
+SA, SB, DA, DB, M, b = stripNetFile()
+print(DCnet(SA, SB, DA, DB, M, b))
