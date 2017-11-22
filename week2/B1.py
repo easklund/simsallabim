@@ -1,7 +1,5 @@
 import binascii
 
-
-
 def DCnet(SA, SB, DA, DB, M, b):
     if b == '0' :
         DC = (hexToInt(SA)) ^ (hexToInt(SB))
