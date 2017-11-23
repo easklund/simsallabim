@@ -21,51 +21,64 @@ def printPcap():
         return eth_src, eth_dst, ip_src, ip_dst
 
 
-def findIPinMix(NazirIP, MixIP, nbrParters, pcapfile):
+def findIPinMix(NazirIP, MixIP, m, pcapfile):
     testcap = open(pcapfile, 'rb')
     capfile = savefile.load_savefile(testcap, layers=2, verbose=True)
     i = 0
-    eth_src = []
-    eth_dst = []
     ip_src = []
     ip_dst = []
     for pkt in capfile.packets:
         timestamp = pkt.timestamp
-        # all data is ASCII encoded (byte arrays). If we want to compare with strings
-        # we need to decode the byte arrays into UTF8 coded strings
-        eth_src.append(pkt.packet.src.decode('UTF8'))
-        eth_dst.append(pkt.packet.dst.decode('UTF8'))
         ip_src.append(pkt.packet.payload.src.decode('UTF8'))
         ip_dst.append(pkt.packet.payload.dst.decode('UTF8'))
 
     i = 0
     suspects = []
     hit = False
-    #print("ip: ", ip_src)
     print("längd: ", len(ip_src))
     for i in range(0,len(ip_src)):
         while i <= len(ip_src)-1 and ip_src[i] != MixIP:
-            #print("ipSrc:" + ip_src[i])
-            #print("ipMix" + MixIP)
-            #print(i)
             if ip_src[i] == NazirIP:
                 hit = True
             i += 1
-        #print("ur")
         if hit == True:
-            #print("true")
             mySet = set()
             while i <= len(ip_src)-1 and ip_src[i] == MixIP:
-                #print(i)
                 mySet.add(ip_dst[i])
                 i += 1
             suspects.append(mySet)
         else:
-            #print("false")
             while i <= len(ip_src)-1 and ip_src[i] == MixIP :
-                #print(i)
                 i += 1
-    return suspects
+    return suspects, m
+
+def learningPhase(suspects, m):
+    disList = [suspects[0]]
+    sets = []
+    i = 1
+    while len(disList) < m:
+        hit = False
+        for j in range(len(disList)):
+            if not(suspets[i].isdisjoint(disList[j])):
+                hit = True
+                sets.append(suspets[i])
+                break
+        if hit == False:
+            disList.append(suspets[i])
+        i += 1
+    return disList, sets
+
+def excludingPhase(disList, sets):
+    for i in range disList:
+        for j in range sets:
+            
+
+
+#printPcap()
+findIPinMix('159.237.13.37', '94.147.150.188', 2, 'test2.pcap')
+
+
+
 
 def interpertationPhase(suspects):
     size = len(suspects)
@@ -78,11 +91,6 @@ def interpertationPhase(suspects):
         for j in range(0, len(finalIntersection))
             temp = set.intersection(suspects[i], suspects[j])
             if(False):
-                
-
-
-
-
 
     while len(finalIntersection) > 1:
         size = len(suspects)
@@ -90,10 +98,3 @@ def interpertationPhase(suspects):
             for j in range(i, size):
                 if i != j:
                     finalIntersection.append(set.intersection(suspects[i], suspects[j]))
-
-
-
-
-
-#printPcap()
-findIPinMix('159.237.13.37', '94.147.150.188', 2, 'test2.pcap')
