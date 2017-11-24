@@ -60,6 +60,6 @@ def byteToInt(byte):
 def intToByte(integer):
     four_bytes = integer.to_bytes(4, byteorder='big', signed=True)
     return four_bytes
-#print(stripNetFile())
+
 SA, SB, DA, DB, M, b = stripNetFile()
 print(DCnet(SA, SB, DA, DB, M, b))
