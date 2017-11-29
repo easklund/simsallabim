@@ -10,9 +10,11 @@ def revealMasterSecret(listOfKPoly):
     #interpolate
     #secret = sumOF(f(i)) * multiplicationssummaOF(j(j-i))
     sumOf = 0
-    mulOf = 0
+    mulOf = 1
+    secret = 0
     for i in range(len(listOfKPoly)):
-        #sumOf = sumOf + listOfKPoly[i]
+        f =  listOfKPoly[i]
         for j in range(len(listOfKPoly)):
             if j != i :
-                j/(i-j)
+                mulOf = j/(i-j)
+        secret = secret + f * mulOf
