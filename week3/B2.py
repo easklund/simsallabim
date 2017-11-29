@@ -13,8 +13,10 @@ def revealMasterSecret(listOfKPoly):
     mulOf = 1
     secret = 0
     for i in range(len(listOfKPoly)):
+        mulOf = 1
         f =  listOfKPoly[i]
         for j in range(len(listOfKPoly)):
             if j != i :
-                mulOf = j/(i-j)
-        secret = secret + f * mulOf
+                mulOf = mulOf * j/(j-i)
+        secret = secret + (f * mulOf)
+    return secret
