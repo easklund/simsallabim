@@ -1,4 +1,6 @@
-#commitment scheme
+#commitment scheme, vi vill kolla om vi kan säga att jag röstat på något annat
+#och genom att välja ett annat k få fram samma hash som det värdet jag commitade först.
+#Och testa för hur stor slh det är att det går med olika längder på hashen.
 import random
 import hashlib
 from bitstring import *
