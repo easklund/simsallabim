@@ -14,28 +14,47 @@ def hashSha1(bytein, randomIn):
     return sha1.digest()
 
 def generateK():
-    k = random.randint(0, (2^16) -1)
+    k = random.randrange(0, 2**16)
     k = intToByte(k)
     return k
 
 def intToByte(integer):
-    four_bytes = integer.to_bytes(2, byteorder='big', signed=True)
-    return four_bytes
+    Bytes = integer.to_bytes(2, byteorder='big')
+    return Bytes
 
-def checkBining(x, invertedVote):
-    for i in range(2^16):
+def byteToInt(i):
+    return int.from_bytes(i, byteorder='big')
+
+def checkBinding(x, invertedVote):
+    print('x: ', x)
+    for i in range(2**16-1):
         i = intToByte(i)
         newX = commitment(invertedVote, i)
+        newX = truncateHash(newX, 16)
+        #print('newX: ', newX)
         if newX == x :
             return True
     return False
 
-def trancateHash(hashen, size):
-    cutHash = hashen % (size)
+def truncateHash(hashen, size):
+    #print("hashen1: ", hashen)
+    hashen = byteToInt(hashen)
+    #print("hashen2: ", hashen)
+    cutHash = hashen % (2**size)
+    #print("hej: ", cutHash)
+    return intToByte(cutHash)
 
 
 #print(commitment(b'\0',generateK()))
 myX = commitment(b'\0',generateK())
-print(myX)
-print(checkBining(myX, b'\1'))
+print("MyX: ", myX)
+trun = truncateHash(myX, 17)
+print('trun: ', trun)
+print(checkBinding(trun, b'\1'))
+
+#tran = truncateHash(myX, 10000000)
+#print(tran)
+#print(myX)
+#print(checkBinding(myX, b'\1'))
+
 #print(generateK())
