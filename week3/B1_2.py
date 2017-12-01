@@ -3,9 +3,10 @@
 import random
 import hashlib
 
-def commitment(v, k): #v is a one bit value
+def commitment(v, k, trunSize): #v is a one bit value
      x = hashSha1(v, k) #how to hash with to input
-     return x
+     trun = truncateHash(x, trunSize)
+     return trun
 
 def hashSha1(bytein, randomIn):
     sha1 = hashlib.sha1()
@@ -25,36 +26,30 @@ def intToByte(integer):
 def byteToInt(i):
     return int.from_bytes(i, byteorder='big')
 
-def checkBinding(x, invertedVote):
-    print('x: ', x)
-    for i in range(2**16-1):
+def checkBinding(x, invertedVote, trunSize):
+    for i in range(2**16):
         i = intToByte(i)
-        newX = commitment(invertedVote, i)
-        newX = truncateHash(newX, 16)
-        #print('newX: ', newX)
+        newX = commitment(invertedVote, i, trunSize)
         if newX == x :
             return True
     return False
 
 def truncateHash(hashen, size):
-    #print("hashen1: ", hashen)
     hashen = byteToInt(hashen)
-    #print("hashen2: ", hashen)
     cutHash = hashen % (2**size)
-    #print("hej: ", cutHash)
-    return intToByte(cutHash)
+    return cutHash
 
 
-#print(commitment(b'\0',generateK()))
-myX = commitment(b'\0',generateK())
-print("MyX: ", myX)
-trun = truncateHash(myX, 17)
-print('trun: ', trun)
-print(checkBinding(trun, b'\1'))
+def binding_property(size, trunSize):
+    san = 0
+    for j in range(size):
+        myX = commitment(b'\0',generateK(), trunSize)
+        if checkBinding(myX, b'\1', trunSize):
+            san += 1
+    return (san/size) * 100
 
-#tran = truncateHash(myX, 10000000)
-#print(tran)
-#print(myX)
-#print(checkBinding(myX, b'\1'))
-
-#print(generateK())
+print("5: ", binding_property(100, 5))
+print("10: ", binding_property(100, 10))
+print("16: ", binding_property(100, 16))
+print("20: ", binding_property(100, 20))
+print("25: ", binding_property(100, 25))
