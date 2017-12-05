@@ -48,14 +48,14 @@ def binding_property(size, trunSize):
             san += 1
     return (san/size) * 100
 
-# print("5: ", binding_property(100, 5))
-# print("10: ", binding_property(100, 10))
-# print("12: ", binding_property(100, 12))
-# print("14: ", binding_property(100, 14))
-# print("16: ", binding_property(100, 16))
-# print("18: ", binding_property(100, 18))
-# print("20: ", binding_property(100, 20))
-# print("25: ", binding_property(100, 25))
+print("5: ", binding_property(500, 5))
+print("10: ", binding_property(500, 10))
+print("12: ", binding_property(500, 12))
+print("14: ", binding_property(500, 14))
+print("16: ", binding_property(500, 16))
+print("18: ", binding_property(500, 18))
+print("20: ", binding_property(500, 20))
+print("25: ", binding_property(500, 25))
 
 
 
@@ -91,11 +91,11 @@ def conceling_property(size, turnSize, MyVote):
             nbrOfVin += 1
     return (nbrOfVin/size) *100
 
-print("5: ", conceling_property(500, 5, b'\1'))
-print("10: ", conceling_property(500, 10, b'\1'))
-print("12: ", conceling_property(500, 12, b'\1'))
-print("14: ", conceling_property(500, 14, b'\1'))
-print("16: ", conceling_property(500, 16, b'\1'))
-print("18: ", conceling_property(500, 18, b'\1'))
-print("20: ", conceling_property(500, 20, b'\1'))
-print("25: ", conceling_property(500, 25, b'\1'))
+# print("5: ", conceling_property(500, 5, b'\1'))
+# print("10: ", conceling_property(500, 10, b'\1'))
+# print("12: ", conceling_property(500, 12, b'\1'))
+# print("14: ", conceling_property(500, 14, b'\1'))
+# print("16: ", conceling_property(500, 16, b'\1'))
+# print("18: ", conceling_property(500, 18, b'\1'))
+# print("20: ", conceling_property(500, 20, b'\1'))
+# print("25: ", conceling_property(500, 25, b'\1'))
