@@ -1,11 +1,12 @@
 #hej
 import requests
+requests.packages.urllib3.disable_warnings()
 import hashlib
 import binascii
 import timeit
 
 def genValidSign(name, grade):
-    foundRightChar = [20]
+    foundRightChar = [None]*20
     for y in range(20):
         bestTime = 0
         for i in range(16):
@@ -19,14 +20,27 @@ def genValidSign(name, grade):
             #     bestTime = time
             if time >bestTime:
                 bestTime = time
-                foundRightChar[y-1] = i
+                # print("i: ", i)
+                # print("y: ", y)
+                foundRightChar[y] = value
 
-    r = requests.get('https://eitn41.eit.lth.se:3119/ha4/addgrade.php?', params=payload)
-    if r == 1:
-        return value
+    print(foundRightChar)
+    signature = ListToString(foundRightChar)
+    print(signature)
+    payload={'grade': grade, 'name' : name, 'signature': signature}
+    r = requests.get('https://eitn41.eit.lth.se:3119/ha4/addgrade.php', params=payload, verify = False)
+    print('r: ', r.text)
+    if r.text == 1:
+        return signature
     else:
         print("We fucked up")
 
+def ListToString(list):
+    size = len(list)
+    string = ''
+    for i in range(size):
+        string = string + list[i]
+    return string
 
     # python requeste
     # s = HMAC(name||grade, k)
@@ -34,7 +48,7 @@ def genValidSign(name, grade):
 #name=Kalle&grade=5&signature=1
 
 def intToHex(i):
-    n = format(i,'08x')
+    n = format(i,'01x')
     return n
 
 print(genValidSign('Kalle', '5'))
