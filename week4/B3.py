@@ -39,12 +39,35 @@ def OAEP_encode(M, seed):
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
-    #output the decoded message M; OAEP decode(EM) = M.
+    hlen = 20
     k = 128
-    c = OS2IP(EM) # TODO implement metoden
-    m = RSADP(K, c) #TODO implement the method, find the private key K
-    EM = I2OSP(m, k)
-    return EM
+
+    #output the decoded message M; OAEP decode(EM) = M.
+    #EM = Y + maskedSeed + maskedDB (len(Y)= 1 octet, len(maskedSeed) = hlen, len(maskedDB(k-hlen-1))
+    # b.  Separate the encoded message EM into a single octet Y, an
+    #           octet string maskedSeed of length hLen, and an octet
+    #           string maskedDB of length k - hLen - 1 as
+    #
+    #              EM = Y || maskedSeed || maskedDB.
+    #
+    #       c.  Let seedMask = MGF(maskedDB, hLen).
+    #
+    #       d.  Let seed = maskedSeed \xor seedMask.
+    #
+    #       e.  Let dbMask = MGF(seed, k - hLen - 1).
+    #
+    #       f.  Let DB = maskedDB \xor dbMask.
+    #
+    #       g.  Separate DB into an octet string lHash' of length hLen, a
+    #           (possibly empty) padding string PS consisting of octets
+    #           with hexadecimal value 0x00, and a message M as
+    #
+    #              DB = lHash' || PS || 0x01 || M.
+    #
+    #           If there is no octet with hexadecimal value 0x01 to
+    #           separate PS from M, if lHash does not equal lHash', or if
+    #           Y is nonzero, output "decryption error" and stop.  (See
+    #           the note below.)
 
 def I2OSP(x, xLen):
     if x >= (256**xLen):
@@ -56,6 +79,11 @@ def I2OSP(x, xLen):
         x = x//256
         c.append(xi)
     return bytes(reversed(c))
+
+def OS2IP(X):
+    a = X[0]
+    b = X[1]
+
 
 def Hash(in1, in2):
     hashSha1hex(hexToByte(in1),hexToByte(in2))
