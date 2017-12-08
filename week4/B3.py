@@ -41,8 +41,8 @@ def OAEP_encode(M, seed):
 def OAEP_decode(EM):
     #output the decoded message M; OAEP decode(EM) = M.
     k = 128
-    c = OS2IP(EM) # TODO implement metoden
-    m = RSADP(K, c) #TODO implement the method, find the private key K
+    c = OS2IP(EM) # TODO implement metoden Nora
+    m = RSADP(K, c) #TODO implement the method, find the private key K Emma
     EM = I2OSP(m, k)
     return EM
 
