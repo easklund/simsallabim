@@ -1,4 +1,5 @@
-
+import hashlib
+import binascii
 
 def mgf1(mgfSeed, maskLen):
     hLen = 2**32
@@ -10,10 +11,11 @@ def mgf1(mgfSeed, maskLen):
     T = ''
     #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
     for i in range((len(maskLen) / hLen) - 1):
-        #
+        c = convertInt(i, 4)
+        T = T + Hash(mgfSeed,c)
 
     #Output the leading maskLen octets of T as the octet string mask.
-    return leadingMaskLen
+    return truncate(T, maskLen)
 
 def OAEP_encode(M, seed):
     hLen = 20
@@ -103,3 +105,25 @@ def convertInt(x, xLen):
         xi= x % 256
         c += str(xi)
     return c[::-1]
+
+def Hash(in1, in2):
+    hashSha1hex(hexToByte(in1),hexToByte(in2))
+
+def hashSha1hex(bytein1, bytein2):
+    sha1 = hashlib.sha1()
+    sha1.update(bytein1)
+    sha1.update(bytein2)
+    print (sha1.hexdigest())
+
+def hexToByte(hexa):
+    d = binascii.unhexlify(hexa)
+    return d
+
+def hexToInt(hexa):
+    integer = int(hexa, 16)
+    return integer
+
+def truncate(T, size):
+    T = hexToInt(T)
+    cutT = T % (2**size)
+    return cutT
