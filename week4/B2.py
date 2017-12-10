@@ -36,11 +36,11 @@ def genValidSign(name, grade):
     print(signature)
     payload={'grade': grade, 'name' : name, 'signature': signature}
     r = requests.get('https://eitn41.eit.lth.se:3119/ha4/addgrade.php', params=payload, verify = False)
-    print('r: ', r.text)
+    print('r:', r.text)
     if r.text == 1:
         return signature
     else:
-        print("We fucked up")
+        return "We fucked up"
 
 def ListToString(list):
     size = len(list)
