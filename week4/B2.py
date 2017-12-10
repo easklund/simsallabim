@@ -36,8 +36,8 @@ def genValidSign(name, grade):
     print(signature)
     payload={'grade': grade, 'name' : name, 'signature': signature}
     r = requests.get('https://eitn41.eit.lth.se:3119/ha4/addgrade.php', params=payload, verify = False)
-    print('r: ', r.text)
-    if r.text == 1:
+    print('r: ', r.text.strip())
+    if r.text.strip() == 1:
         return signature
     else:
         print("We fucked up")
