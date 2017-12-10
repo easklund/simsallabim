@@ -4,70 +4,67 @@ import binascii
 def mgf1(mgfSeed, maskLen):
     hLen = 2**32
     #If maskLen > 2^32 hLen, output "mask too long" and stop.
-    if len(maskLen) > hLen :
+    if maskLen > hLen :
         print("mask no long")
         return -1
     #Let T be the empty octet string.
     T = ''
     #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
-    for i in range((len(maskLen) / hLen) - 1):
+    for i in range((maskLen // hLen) - 1):
         c = I2OSP(i, 4)
         T = T + Hash(mgfSeed,c)
-
+    print('T: ',T)
     #Output the leading maskLen octets of T as the octet string mask.
     return truncate(T, maskLen)
 
 def OAEP_encode(M, seed):
+    M = hexToByte(M)
+    seed = hexToByte(seed)
     hLen = 20
     k = 128 #128 bytes
-    L = ''
-    lHash = Hash(L) #Let lHash = Hash(L), an octet string of length hLen (see
+    L = hexToByte('')
+
+    lHash = hashSha1(L) #Let lHash = Hash(L), an octet string of length hLen (see
                     #the note below).
     lPS = k - len(M) - 2*hLen - 2
-    if lPS == not(0):
-        PS = ''
+    PS = ''
+    if lPS != 0:
         for i in range(lPS):
             PS = PS + '0'
-    DB =   lhash + PS + '1'+ M # step c
-    dbMask = mgf1(seed, k - hlen - 1)
+    PS = hexToByte(PS.strip())
+    DB =   lHash + PS + hexToByte('01')+ M # step c
+    dbMask = mgf1(seed, k - hLen - 1)
     maskedDB = DB ^ dbMask
-    seedMask = mgf1(maskedDB, hlen)
+    seedMask = mgf1(maskedDB, hLen)
     maskedSeed = seed^seedMask
-    EM = '0' + maskedSeed + maskedDB
+    EM = b'\00' + maskedSeed + maskedDB
     # output the encoded message EM; OAEP encode(M) = EM.
     return EM
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
-    hlen = 20
+    hLen = 20
     k = 128
+    L = ''
+    lHash = hashSha1(L)
+    Y = EM[:1]
+    maskedSeed = EM[1:hLen+1]
+    maskedDB = EM[hLen+1:]
+    seedmask= mgf1(maskedSeed, hLen)
+    seed = maskedSeed ^ seedMask
+    dbMask = mgf1(seed, k - hLen - 1)
+    DB = maskedDB ^ dbMask
+    lHashPrime = DB[:hLen]
+    DBrest = DB[hlen:]
+    i = 0
+    while DBrest[i:i+1] == '0x00':
+        i +=1
+    if DBrest[i] != '0x01' or lHash != lHashPrime or Y != b'\00':
+        return 'decryption error'
+    PS = DBrest[:i]
+    M = DBrest[i+1:]
+    return M
 
-    #output the decoded message M; OAEP decode(EM) = M.
-    #EM = Y + maskedSeed + maskedDB (len(Y)= 1 octet, len(maskedSeed) = hlen, len(maskedDB(k-hlen-1))
-    # b.  Separate the encoded message EM into a single octet Y, an
-    #           octet string maskedSeed of length hLen, and an octet
-    #           string maskedDB of length k - hLen - 1 as
-    #
-    #              EM = Y || maskedSeed || maskedDB.
-    #
-    #       c.  Let seedMask = MGF(maskedDB, hLen).
-    #
-    #       d.  Let seed = maskedSeed \xor seedMask.
-    #
-    #       e.  Let dbMask = MGF(seed, k - hLen - 1).
-    #
-    #       f.  Let DB = maskedDB \xor dbMask.
-    #
-    #       g.  Separate DB into an octet string lHash' of length hLen, a
-    #           (possibly empty) padding string PS consisting of octets
-    #           with hexadecimal value 0x00, and a message M as
-    #
-    #              DB = lHash' || PS || 0x01 || M.
-    #
-    #           If there is no octet with hexadecimal value 0x01 to
-    #           separate PS from M, if lHash does not equal lHash', or if
-    #           Y is nonzero, output "decryption error" and stop.  (See
-    #           the note below.)
 
 def I2OSP(x, xLen):
     if x >= (256**xLen):
@@ -102,12 +99,19 @@ def hexToInt(hexa):
     integer = int(hexa, 16)
     return integer
 
-def hexToInt(i):
-    return int(i, 16)
+# def hexToInt(i):
+#     return int(i, 16)
 
 def truncate(T, size):
     T = hexToInt(T)
     cutT = T % (2**size)
     return cutT
 
-print(convertInt(15,4))
+def hashSha1(bytein):
+    sha1 = hashlib.sha1()
+    sha1.update(bytein)
+    return sha1.digest()
+
+#print(convertInt(15,4))
+
+OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381')

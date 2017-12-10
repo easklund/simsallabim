@@ -40,7 +40,7 @@ def genValidSign(name, grade):
     if r.text.strip() == 1:
         return signature
     else:
-        print("We fucked up")
+        return "We fucked up"
 
 def ListToString(list):
     size = len(list)
