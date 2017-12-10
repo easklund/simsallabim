@@ -50,21 +50,27 @@ def OAEP_encode(M, seed):
 def OAEP_decode(EM):
     hLen = 20
     k = 128
-    L = ''
+    L = hexToByte('')
     lHash = hashSha1(L)
     Y = EM[:1]
+    print('EM: ',EM)
+    print('EM-B: ', hexToByte(EM))
     maskedSeed = EM[1:hLen+1]
     maskedDB = EM[hLen+1:]
-    seedmask= mgf1(maskedSeed, hLen)
-    seed = maskedSeed ^ seedMask
+    seedMask= mgf1(maskedSeed, hLen)
+    seed = hexToInt(maskedSeed) ^ seedMask
+    seed = intToByte(seed)
     dbMask = mgf1(seed, k - hLen - 1)
-    DB = maskedDB ^ dbMask
+    DB = hexToInt(maskedDB) ^ dbMask
+    DB = intToByte(DB)
     lHashPrime = DB[:hLen]
-    DBrest = DB[hlen:]
+    DBrest = DB[hLen:]
     i = 0
     while DBrest[i:i+1] == '0x00':
         i +=1
-    if DBrest[i] != '0x01' or lHash != lHashPrime or Y != b'\00':
+    print(DB)
+    print('DB: ', intToByte(DBrest[i]), 'lHash: ', lHash, 'lHashPrime: ', lHashPrime, 'Y: ', Y)
+    if DBrest[i] != '0x01' or lHash != lHashPrime or Y != '0':
         return 'decryption error'
     PS = DBrest[:i]
     M = DBrest[i+1:]
