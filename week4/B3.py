@@ -1,5 +1,6 @@
 import hashlib
 import binascii
+import math
 
 def mgf1(mgfSeed, maskLen):
     hLen = 2**32
@@ -10,7 +11,8 @@ def mgf1(mgfSeed, maskLen):
     #Let T be the empty octet string.
     T = ''
     #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
-    for i in range((maskLen // hLen) - 1):
+    print('test: ', math.ceil(maskLen/ hLen))
+    for i in range(math.ceil(maskLen/ hLen) - 1):
         c = I2OSP(i, 4)
         T = T + Hash(mgfSeed,c)
     print('T: ',T)
@@ -34,12 +36,15 @@ def OAEP_encode(M, seed):
     PS = hexToByte(PS.strip())
     DB =   lHash + PS + hexToByte('01')+ M # step c
     dbMask = mgf1(seed, k - hLen - 1)
-    maskedDB = DB ^ dbMask
+    maskedDB = byteToInt(DB) ^ dbMask
+    maskedDB = intToByte(maskedDB)
     seedMask = mgf1(maskedDB, hLen)
-    maskedSeed = seed^seedMask
+    maskedSeed = byteToInt(seed)^seedMask
+    maskedSeed = intToByte(maskedSeed)
     EM = b'\00' + maskedSeed + maskedDB
     # output the encoded message EM; OAEP encode(M) = EM.
-    return EM
+
+    return byteToHex(EM)
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
@@ -96,8 +101,26 @@ def hexToByte(hexa):
     return d
 
 def hexToInt(hexa):
+    if hexa == '':
+        return 0
     integer = int(hexa, 16)
     return integer
+
+def intToByte(integer):
+    four_bytes = integer.to_bytes(128, byteorder='big')
+    return four_bytes
+
+def byteToHex(byte):
+    hexa = intToHex(byteToInt(byte))
+    return hexa
+
+def intToHex(i):
+    n = format(i,'08x')
+    return n
+
+def byteToInt(byte):
+    i = int.from_bytes(byte, byteorder='big')
+    return i
 
 # def hexToInt(i):
 #     return int(i, 16)
@@ -114,4 +137,4 @@ def hashSha1(bytein):
 
 #print(convertInt(15,4))
 
-OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381')
+print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
