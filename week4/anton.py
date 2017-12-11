@@ -52,6 +52,7 @@ def MGF1(mgfSeed, maskLen, hLen = 20, Hash=sha1):
     T = b''
     for i in range(ceil(maskLen / hLen)):
          C = I2OSP(i, 4)
+         print('C: ', C)
          T += Hash(mgfSeed + C).digest()
     return to_hex(T[:maskLen])
 
