@@ -11,7 +11,7 @@ def mgf1(mgfSeed, maskLen):
     #Let T be the empty octet string.
     T = ''
     #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
-    for i in range(math.ceil(maskLen/ hLen)):
+    for i in range(math.ceil(maskLen / hLen)):
         c = I2OSP(i, 4)
         h = Hash(mgfSeed,c)
         T = T + h
@@ -69,13 +69,14 @@ def OAEP_decode(EM):
     print('seed: ', seed)
     # seed = bytes(a ^ b for a, b in zip(maskedSeed, hexToByte(seedMask)))
     dbMask = mgf1(seed, k - hLen - 1)
+    # dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
     print('dbMask: ', dbMask)
     DB = hexToInt(dbMask) ^ byteToInt(maskedDB)
     DB = intToByte(DB)
-    print('DB: ', DB)
     # DB = bytes(a ^ b for a, b in zip(hexToByte(dbMask), maskedDB))[hLen:]
     lHashPrime = DB[:hLen]
     DBrest = DB[hLen:]
+    print('DB: ', DBrest)
     i = 0
     while DBrest[i:i+1] == '0x00':
         i +=1
