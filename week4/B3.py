@@ -11,7 +11,6 @@ def mgf1(mgfSeed, maskLen):
     T = ''
     for i in range(math.ceil(maskLen / hLen)):
         c = I2OSP(i, 4)
-        print('c: ', c)
         h = hashSha1hex(mgfSeed + c)
         T = T + h
     print('T: ',T)
@@ -30,7 +29,7 @@ def OAEP_encode(M, seed):
     PS = ''
     if lPS != 0:
         for i in range(lPS):
-            PS = PS + '0'
+            PS = PS + '00'
     PS = hexToByte(PS.strip())
     DB =   lHash + PS + hexToByte('01')+ M # step c
     dbMask = mgf1(seed, k - hLen - 1)
@@ -41,7 +40,6 @@ def OAEP_encode(M, seed):
     maskedSeed = intToByte(maskedSeed)
     EM = b'\00' + maskedSeed + maskedDB
     # output the encoded message EM; OAEP encode(M) = EM.
-
     return byteToHex(EM)
 
 # EM and output = hexadecimal strings
