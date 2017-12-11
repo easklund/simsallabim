@@ -4,21 +4,18 @@ import math
 
 def mgf1(mgfSeed, maskLen):
     hLen = 2**32
-    #If maskLen > 2^32 hLen, output "mask too long" and stop.
     if maskLen > hLen :
         print("mask no long")
         return -1
-    #Let T be the empty octet string.
+    hLen = 20
     T = ''
-    #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
     for i in range(math.ceil(maskLen / hLen)):
         c = I2OSP(i, 4)
-        h = Hash(mgfSeed,c)
+        print('c: ', c)
+        h = hashSha1hex(mgfSeed + c)
         T = T + h
     print('T: ',T)
-    #Output the leading maskLen octets of T as the octet string mask.
-    # return truncate(T, maskLen)
-    return T
+    return T[:maskLen*2]
 
 def OAEP_encode(M, seed):
     M = hexToByte(M)
@@ -68,17 +65,17 @@ def OAEP_decode(EM):
     # print('EM: ',EM)
     # print('EM-B: ', hexToByte(EM))
     maskedSeed = EM[1:hLen+1]
-    print('maskedSeed: ', maskedSeed)
+    #print('maskedSeed: ', maskedSeed)
     maskedDB = EM[hLen+1:]
-    print('maskedDB: ', maskedDB)
+    #print('maskedDB: ', maskedDB)
     seedMask= mgf1(maskedDB, hLen)
-    print('seedMask: ', seedMask)
+    #print('seedMask: ', seedMask)
     seed = byteToInt(maskedSeed) ^ hexToInt(seedMask)
     seed = intToByte(seed)
-    print('seed: ', seed)
+    #print('seed: ', seed)
     # seed = bytes(a ^ b for a, b in zip(maskedSeed, hexToByte(seedMask)))
-    # dbMask = mgf1(seed, k - hLen - 1)
-    dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
+    dbMask = mgf1(seed, k - hLen - 1)
+    #dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
     print('dbMask: ', dbMask)
     DB = hexToInt(dbMask) ^ byteToInt(maskedDB)
     DB = intToByte(DB)
@@ -87,8 +84,9 @@ def OAEP_decode(EM):
     DBrest = DB[hLen:]
     print('DB: ', DBrest)
     i = 0
-    while DBrest[i:i+1] == '0x00':
-        i +=1
+    while DBrest[i:i+1] == b'\x00':
+        i += 1
+    #print('DB efter while: ', DBrest)
     # print('i: ', i)
     # print('DB: ', byteToHex(DBrest))
     # print('DBrest: ', intToHex(DBrest[i]))
@@ -122,10 +120,9 @@ def OS2IP(X):
 def Hash(in1, in2):
     return hashSha1hex(in1, in2)
 
-def hashSha1hex(bytein1, bytein2):
+def hashSha1hex(bytein1):
     sha1 = hashlib.sha1()
     sha1.update(bytein1)
-    sha1.update(bytein2)
     return sha1.hexdigest()
 
 def hexToByte(hexa):
