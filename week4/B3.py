@@ -11,7 +11,7 @@ def mgf1(mgfSeed, maskLen):
     T = ''
     for i in range(math.ceil(maskLen / hLen)):
         c = I2OSP(i, 4)
-        print('c: ', c)
+        # print('c: ', c)
         h = hashSha1hex(mgfSeed + c)
         T = T + h
     print('T: ',T)
@@ -31,13 +31,13 @@ def OAEP_encode(M, seed):
     PS = ''
     if lPS != 0:
         for i in range(lPS):
-            PS = PS + '0'
+            PS = PS + '00'
     PS = hexToByte(PS.strip())
     print('PS: ', PS)
-    DB =   lHash + PS + hexToByte('01') + M # step c
+    DB =   lHash + PS + I2OSP(1, 1) + M # step c
+    # DB = b'\xda9\xa3\xee^kK\r2U\xbf\xef\x95`\x18\x90\xaf\xd8\x07\t\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xfdU\x07\xe9\x17\xec\xbe\x838x'
     print('DB: ', DB)
     dbMask = mgf1(seed, k - hLen - 1)
-    # dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
     print('dbMask: ', dbMask)
     maskedDB = hexToInt(dbMask) ^ byteToInt(DB)
     maskedDB = intToByte(maskedDB)
@@ -46,12 +46,15 @@ def OAEP_encode(M, seed):
     print('seedMask: ', seedMask)
     maskedSeed = byteToInt(seed) ^ hexToInt(seedMask)
     maskedSeed = intToByte(maskedSeed)
-    print('maskedSeed: ', maskedSeed)
-    EM = b'\00' + maskedSeed + maskedDB
-    print('EM: ', byteToHex(EM))
+    temp = byteToHex(maskedSeed + maskedDB)
+    EM = '0000' + temp
+    # print('maskedSeed: ', maskedSeed)
+    # EM = b'\00' + maskedSeed + maskedDB
+    # print('EM: ', maskedSeed + maskedDB)
+    print('EM: ', EM)
     # output the encoded message EM; OAEP encode(M) = EM.
 
-    return byteToHex(EM)
+    return EM
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
@@ -168,6 +171,6 @@ def hashSha1(bytein):
 
 #print(convertInt(15,4))
 
-print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
+(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
 # print("hejhej: ")
 # print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
