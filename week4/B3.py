@@ -22,25 +22,38 @@ def OAEP_encode(M, seed):
     hLen = 20
     k = 128 #128 bytes
     L = hexToByte('')
+    print('L: ', L)
 
     lHash = hashSha1(L) #Let lHash = Hash(L), an octet string of length hLen (see
-                    #the note below).
+    print('lHash: ', lHash)                #the note below).
     lPS = k - len(M) - 2*hLen - 2
     PS = ''
     if lPS != 0:
         for i in range(lPS):
             PS = PS + '00'
     PS = hexToByte(PS.strip())
-    DB =   lHash + PS + hexToByte('01')+ M # step c
+    print('PS: ', PS)
+    DB =   lHash + PS + I2OSP(1, 1) + M # step c
+    # DB = b'\xda9\xa3\xee^kK\r2U\xbf\xef\x95`\x18\x90\xaf\xd8\x07\t\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xfdU\x07\xe9\x17\xec\xbe\x838x'
+    print('DB: ', DB)
     dbMask = mgf1(seed, k - hLen - 1)
-    maskedDB = byteToInt(DB) ^ dbMask
+    print('dbMask: ', dbMask)
+    maskedDB = hexToInt(dbMask) ^ byteToInt(DB)
     maskedDB = intToByte(maskedDB)
+    print('maskedDB: ', maskedDB)
     seedMask = mgf1(maskedDB, hLen)
-    maskedSeed = byteToInt(seed)^seedMask
+    print('seedMask: ', seedMask)
+    maskedSeed = byteToInt(seed) ^ hexToInt(seedMask)
     maskedSeed = intToByte(maskedSeed)
-    EM = b'\00' + maskedSeed + maskedDB
+    temp = byteToHex(maskedSeed + maskedDB)
+    EM = '0000' + temp
+    # print('maskedSeed: ', maskedSeed)
+    # EM = b'\00' + maskedSeed + maskedDB
+    # print('EM: ', maskedSeed + maskedDB)
+    print('EM: ', EM)
     # output the encoded message EM; OAEP encode(M) = EM.
-    return byteToHex(EM)
+
+    return EM
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
@@ -157,6 +170,6 @@ def hashSha1(bytein):
 
 #print(convertInt(15,4))
 
-# print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
+(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
 # print("hejhej: ")
-print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
+# print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
