@@ -17,7 +17,8 @@ def mgf1(mgfSeed, maskLen):
         T = T + h
     print('T: ',T)
     #Output the leading maskLen octets of T as the octet string mask.
-    return truncate(T, maskLen)
+    # return truncate(T, maskLen)
+    return T
 
 def OAEP_encode(M, seed):
     M = hexToByte(M)
@@ -48,6 +49,8 @@ def OAEP_encode(M, seed):
 
 # EM and output = hexadecimal strings
 def OAEP_decode(EM):
+    EM = hexToByte(EM)
+    print('EM: ', EM)
     hLen = 20
     k = 128
     L = hexToByte('')
@@ -56,27 +59,37 @@ def OAEP_decode(EM):
     # print('EM: ',EM)
     # print('EM-B: ', hexToByte(EM))
     maskedSeed = EM[1:hLen+1]
+    print('maskedSeed: ', maskedSeed)
     maskedDB = EM[hLen+1:]
-    seedMask= mgf1(hexToByte(maskedSeed), hLen)
-    seed = hexToInt(maskedSeed) ^ hexToInt(seedMask)
+    print('maskedDB: ', maskedDB)
+    seedMask= mgf1(maskedDB, hLen)
+    print('seedMask: ', seedMask)
+    seed = byteToInt(maskedSeed) ^ hexToInt(seedMask)
     seed = intToByte(seed)
+    print('seed: ', seed)
+    # seed = bytes(a ^ b for a, b in zip(maskedSeed, hexToByte(seedMask)))
     dbMask = mgf1(seed, k - hLen - 1)
-    DB = hexToInt(maskedDB) ^ hexToInt(dbMask)
+    print('dbMask: ', dbMask)
+    DB = hexToInt(dbMask) ^ byteToInt(maskedDB)
     DB = intToByte(DB)
+    print('DB: ', DB)
+    # DB = bytes(a ^ b for a, b in zip(hexToByte(dbMask), maskedDB))[hLen:]
     lHashPrime = DB[:hLen]
     DBrest = DB[hLen:]
     i = 0
     while DBrest[i:i+1] == '0x00':
         i +=1
-    # print(DB)
-    print('DB: ', byteToHex(intToByte(DBrest[i])))
-    print('lHash: ', byteToHex(lHash))
-    print('lHashPrime: ', byteToHex(lHashPrime))
-    print('Y: ', Y)
+    # print('i: ', i)
+    # print('DB: ', byteToHex(DBrest))
+    # print('DBrest: ', intToHex(DBrest[i]))
+    # print('lHash: ', byteToHex(lHash))
+    # print('lHashPrime: ', byteToHex(lHashPrime))
+    # print('Y: ', Y)
     # if DBrest[i] != '0x01' or lHash != lHashPrime or Y != '0':
     #     return 'decryption error'
     PS = DBrest[:i]
     M = DBrest[i+1:]
+    print('M: ', M)
     return byteToHex(M)
 
 
@@ -116,7 +129,10 @@ def hexToInt(hexa):
     return integer
 
 def intToByte(integer):
-    four_bytes = integer.to_bytes(128, byteorder='big')
+    size = (integer.bit_length() + 7 ) // 8
+    if integer == 0:
+        size = 1
+    four_bytes = integer.to_bytes(size, byteorder='big')
     return four_bytes
 
 def byteToHex(byte):
