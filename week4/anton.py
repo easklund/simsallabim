@@ -18,13 +18,21 @@ def I2OSP(x, xLen):
 
 def OAEP_encode(M, seed, k = 128, hLen = 20, L=b'', Hash=sha1):
     lHash = Hash(L).digest()
+    print('lHash: ', lHash)
     PS = I2OSP(0, k - len(M) // 2 - 2 * hLen - 2)
+    print('PS: ', PS)
     DB = lHash  + PS + I2OSP(1, 1) +  to_byte(M)
+    print('DB: ', DB)
     dbMask = MGF1(seed, k- hLen - 1)
+    print('dbMask: ', dbMask)
     maskedDB = bytes(a ^ b for a, b in zip(to_byte(dbMask), DB))
+    print('maskedDB: ', maskedDB)
     seedMask = MGF1(to_hex(maskedDB), hLen)
+    print('seedMask: ', seedMask)
     maskedSeed = bytes(a ^ b for a, b in zip(to_byte(seed), to_byte(seedMask)))
+    print('maskedSeed: ', maskedSeed)
     EM = I2OSP(0, 1) +  maskedSeed + maskedDB
+    print('EM: ', to_hex(EM))
     return to_hex(EM)
 
 def OAEP_decode(EM, k = 128, hLen = 20):
@@ -55,8 +63,8 @@ def MGF1(mgfSeed, maskLen, hLen = 20, Hash=sha1):
          T += Hash(mgfSeed + C).digest()
     return to_hex(T[:maskLen])
 
-
-OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82')
+OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381')
+# OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82')
 
 # if __name__ == '__main__':
 #     if len(argv) == 2:

@@ -26,23 +26,32 @@ def OAEP_encode(M, seed):
     hLen = 20
     k = 128 #128 bytes
     L = hexToByte('')
+    print('L: ', L)
 
     lHash = hashSha1(L) #Let lHash = Hash(L), an octet string of length hLen (see
-                    #the note below).
+    print('lHash: ', lHash)                #the note below).
     lPS = k - len(M) - 2*hLen - 2
     PS = ''
     if lPS != 0:
         for i in range(lPS):
             PS = PS + '0'
     PS = hexToByte(PS.strip())
-    DB =   lHash + PS + hexToByte('01')+ M # step c
+    print('PS: ', PS)
+    DB =   lHash + PS + hexToByte('01') + M # step c
+    print('DB: ', DB)
     dbMask = mgf1(seed, k - hLen - 1)
-    maskedDB = byteToInt(DB) ^ dbMask
+    # dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
+    print('dbMask: ', dbMask)
+    maskedDB = hexToInt(dbMask) ^ byteToInt(DB)
     maskedDB = intToByte(maskedDB)
+    print('maskedDB: ', maskedDB)
     seedMask = mgf1(maskedDB, hLen)
-    maskedSeed = byteToInt(seed)^seedMask
+    print('seedMask: ', seedMask)
+    maskedSeed = byteToInt(seed) ^ hexToInt(seedMask)
     maskedSeed = intToByte(maskedSeed)
+    print('maskedSeed: ', maskedSeed)
     EM = b'\00' + maskedSeed + maskedDB
+    print('EM: ', byteToHex(EM))
     # output the encoded message EM; OAEP encode(M) = EM.
 
     return byteToHex(EM)
@@ -68,8 +77,8 @@ def OAEP_decode(EM):
     seed = intToByte(seed)
     print('seed: ', seed)
     # seed = bytes(a ^ b for a, b in zip(maskedSeed, hexToByte(seedMask)))
-    dbMask = mgf1(seed, k - hLen - 1)
-    # dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
+    # dbMask = mgf1(seed, k - hLen - 1)
+    dbMask = '23ead46446dce10b4dc50df81166e28eb42f780af86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8346d538b5b5890ebdd2d6fa'
     print('dbMask: ', dbMask)
     DB = hexToInt(dbMask) ^ byteToInt(maskedDB)
     DB = intToByte(DB)
@@ -162,6 +171,6 @@ def hashSha1(bytein):
 
 #print(convertInt(15,4))
 
-# print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
+print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
 # print("hejhej: ")
-print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
+# print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
