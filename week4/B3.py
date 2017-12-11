@@ -12,9 +12,10 @@ def mgf1(mgfSeed, maskLen):
     T = ''
     #For counter from 0 to \ceil (maskLen / hLen) - 1, do the following:
     print('test: ', math.ceil(maskLen/ hLen))
-    for i in range(math.ceil(maskLen/ hLen) - 1):
+    for i in range(math.ceil(maskLen/ hLen)):
         c = I2OSP(i, 4)
-        T = T + Hash(mgfSeed,c)
+        h = Hash(mgfSeed,c)
+        T = T + h
     print('T: ',T)
     #Output the leading maskLen octets of T as the octet string mask.
     return truncate(T, maskLen)
@@ -53,11 +54,11 @@ def OAEP_decode(EM):
     L = hexToByte('')
     lHash = hashSha1(L)
     Y = EM[:1]
-    print('EM: ',EM)
-    print('EM-B: ', hexToByte(EM))
+    # print('EM: ',EM)
+    # print('EM-B: ', hexToByte(EM))
     maskedSeed = EM[1:hLen+1]
     maskedDB = EM[hLen+1:]
-    seedMask= mgf1(maskedSeed, hLen)
+    seedMask= mgf1(hexToByte(maskedSeed), hLen)
     seed = hexToInt(maskedSeed) ^ seedMask
     seed = intToByte(seed)
     dbMask = mgf1(seed, k - hLen - 1)
@@ -68,13 +69,16 @@ def OAEP_decode(EM):
     i = 0
     while DBrest[i:i+1] == '0x00':
         i +=1
-    print(DB)
-    print('DB: ', intToByte(DBrest[i]), 'lHash: ', lHash, 'lHashPrime: ', lHashPrime, 'Y: ', Y)
-    if DBrest[i] != '0x01' or lHash != lHashPrime or Y != '0':
-        return 'decryption error'
+    # print(DB)
+    print('DB: ', byteToHex(intToByte(DBrest[i])))
+    print('lHash: ', byteToHex(lHash))
+    print('lHashPrime: ', byteToHex(lHashPrime))
+    print('Y: ', Y)
+    # if DBrest[i] != '0x01' or lHash != lHashPrime or Y != '0':
+    #     return 'decryption error'
     PS = DBrest[:i]
     M = DBrest[i+1:]
-    return M
+    return byteToHex(M)
 
 
 def I2OSP(x, xLen):
@@ -94,13 +98,13 @@ def OS2IP(X):
 
 
 def Hash(in1, in2):
-    hashSha1hex(hexToByte(in1),hexToByte(in2))
+    return hashSha1hex(in1, in2)
 
 def hashSha1hex(bytein1, bytein2):
     sha1 = hashlib.sha1()
     sha1.update(bytein1)
     sha1.update(bytein2)
-    print (sha1.hexdigest())
+    return sha1.hexdigest()
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -144,4 +148,5 @@ def hashSha1(bytein):
 #print(convertInt(15,4))
 
 # print(OAEP_encode('fd5507e917ecbe833878','1e652ec152d0bfcd65190ffc604c0933d0423381'))
+# print("hejhej: ")
 print(OAEP_decode('0000255975c743f5f11ab5e450825d93b52a160aeef9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51f40e13fb29ed5101dbcb044e6232e6371935c8347286db25c9ee20351ee82'))
