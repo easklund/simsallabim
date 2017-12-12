@@ -32,6 +32,7 @@ def OAEP_encode(M, seed, k = 128, hLen = 20, L=b'', Hash=sha1):
     maskedSeed = bytes(a ^ b for a, b in zip(to_byte(seed), to_byte(seedMask)))
     print('maskedSeed: ', maskedSeed)
     EM = I2OSP(0, 1) +  maskedSeed + maskedDB
+    print('I2OSP: ', I2OSP(0, 1))
     print('EM: ', to_hex(EM))
     return to_hex(EM)
 
@@ -60,10 +61,6 @@ def MGF1(mgfSeed, maskLen, hLen = 20, Hash=sha1):
     T = b''
     for i in range(ceil(maskLen / hLen)):
          C = I2OSP(i, 4)
-<<<<<<< HEAD
-=======
-         # print('C: ', C)
->>>>>>> d1199964401975a45f2408519099f9a1ef56693a
          T += Hash(mgfSeed + C).digest()
     return to_hex(T[:maskLen])
 
