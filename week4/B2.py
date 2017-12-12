@@ -24,7 +24,7 @@ def genValidSign(name, grade):
     payload={'grade': grade, 'name' : name, 'signature': signature}
     r = requests.get('https://eitn41.eit.lth.se:3119/ha4/addgrade.php', params=payload, verify = False)
     print('r: ', r.text.strip())
-    if r.text.strip() == 1:
+    if int(r.text.strip()) == 1:
         return signature
     else:
         return "We fucked up"
@@ -40,4 +40,4 @@ def intToHex(i):
     n = format(i,'01x')
     return n
 
-print(genValidSign('Kalle', '5'))
+print(genValidSign('Anna', '4'))
