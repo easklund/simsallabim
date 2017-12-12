@@ -3,11 +3,10 @@ import binascii
 import math
 
 def mgf1(mgfSeed, maskLen):
-    hLen = 2**32
-    if maskLen > hLen :
-        print("mask no long")
-        return -1
     hLen = 20
+    if maskLen > 2**32 :
+        print("mask to long")
+        return -1
     T = ''
     for i in range(math.ceil(maskLen / hLen)):
         c = I2OSP(i, 4)
@@ -19,17 +18,16 @@ def OAEP_encode(M, seed):
     M = hexToByte(M)
     seed = hexToByte(seed)
     hLen = 20
-    k = 128 #128 bytes
+    k = 128
     L = hexToByte('')
-    lHash = hashSha1(L) #Let lHash = Hash(L), an octet string of length hLen (see
-              #the note below).
+    lHash = hashSha1(L)
     lPS = k - len(M) - 2*hLen - 2
     PS = ''
     if lPS != 0:
         for i in range(lPS):
             PS = PS + '00'
     PS = hexToByte(PS.strip())
-    DB =   lHash + PS + I2OSP(1, 1) + M # step c
+    DB =   lHash + PS + I2OSP(1, 1) + M
     dbMask = mgf1(seed, k - hLen - 1)
     maskedDB = hexToInt(dbMask) ^ byteToInt(DB)
     maskedDB = intToByte(maskedDB)
@@ -68,7 +66,7 @@ def OAEP_decode(EM):
 
 def I2OSP(x, xLen):
     if x >= (256**xLen):
-        #integer too lagre
+        # integer too lagre
         return None
     c = []
     for i in range(xLen):
@@ -80,7 +78,6 @@ def I2OSP(x, xLen):
 def OS2IP(X):
     a = X[0]
     b = X[1]
-
 
 def Hash(in1, in2):
     return hashSha1hex(in1, in2)
@@ -95,8 +92,6 @@ def hexToByte(hexa):
     return d
 
 def hexToInt(hexa):
-    if hexa == '':
-        return 0
     integer = int(hexa, 16)
     return integer
 
@@ -111,30 +106,15 @@ def byteToHex(byte):
     hexa = binascii.hexlify(byte).decode('utf-8')
     return hexa
 
-def intToHex(i):
-    n = format(i,'08x')
-    return n
-
 def byteToInt(byte):
     i = int.from_bytes(byte, byteorder='big')
     return i
-
-# def hexToInt(i):
-#     return int(i, 16)
-
-def truncate(T, size):
-    cutT = T[:size]
-    return cutT
 
 def hashSha1(bytein):
     sha1 = hashlib.sha1()
     sha1.update(bytein)
     return sha1.digest()
 
-#print(convertInt(15,4))
-
-print('encode: ',OAEP_encode('c107782954829b34dc531c14b40e9ea482578f988b719497aa0687','1e652ec152d0bfcd65190ffc604c0933d0423381'))
-# print("hejhej: ")
-
-print('decode: ' ,OAEP_decode('0063b462be5e84d382c86eb6725f70e59cd12c0060f9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabde9b10bfc51efc06d40d25f96bd0f4c5d88f32c7d33dbc20f8a528b77f0c16a7b4dcdd8f'))
-print('mgf1',mgf1(hexToByte('9b4bdfb2c796f1c16d0c0772a5848b67457e87891dbc8214'),21))
+print('encode: ',OAEP_encode('e79e5fb79ece9bd30699792ec38e927fa4c6e3c229503b3794','58b2ec96cf9cb1f9f4dab72fde2b8588381d7244'))
+print('decode: ' ,OAEP_decode('00cbbfadbb0b9e0d96f094a3d6e552b4d82db3e4f4f9d3778a18b7aa067f90b2178406fa1e1bf77f03f86629dd5607d11b9961707736c2d16e7c668b367890bc6ef1745396404ba7832b1cdfb0388ef601947fc0aff1fd2dcd279dabdfcd92a7a13808d96ceea0a999a9947874a4741e7530bd99046c3368c6485702ea93ad95'))
+print('mgf1: ',mgf1(hexToByte('601c47ea27444ce24417a1526c8c65ca8c3191f9877343c202'),25))
