@@ -19,18 +19,27 @@ def convertShort(i, length):
 
 def convertLong(value, length):
     # TLV where type is integer that has tag 2
-    typeInt = hexToByte('02')
-    size = len(length)
+    typeInt = '02'
+    size = len(length)/2
+    l =  toOct(binascii.hexlify(1 + binascii.unhexlify(toBin(size))))
+    return typeInt + l + value
     #Kolla hur många octets vi ska ha
     #1 sen hur många octets som följer som repreensterar längden
     #restern va octeterna som respresenterar längden
-    l = hexToByte(length)
-    value = intToByte(i)
-    return byteToHex(typeInt + l + value)
+    #l = hexToByte(length)
+    #value = intToByte(i)
+    #return byteToHex(typeInt + l + value)
 
 def DERToBase64(der):
     base64form = b64encode(der)
     return base64form
+
+def toOct(hexa):
+    if len(hexa) % 2 == 0:
+        return hexa
+    else:
+        return '0' + hexa
+
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
