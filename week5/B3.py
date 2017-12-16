@@ -59,10 +59,12 @@ def intToByte(integer):
 def twos_complement(hexa_string):
     out = twos_comp(int(hexa_string,16), 32)
     return out
-    
+
 def twos_comp(val, bits):
-    if (val & (1 << (bits - 1))) != 0:
-        val = val - (1 << bits)
+    size = 1 << (bits - 1)
+    if (val & size - 1) != 0:
+        size = 1 << bits
+        val = val - size
     return val
 
 print(twos_complement('0xFFFFFFFF'))
