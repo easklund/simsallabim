@@ -3,6 +3,10 @@ import binascii
 
 
 def convertToDER(integer):
+    hexRep = intToHex(integer)
+    octRep = toOct(hexRep)
+    der = convertLong(octRep, toOct(intToHex(len(octRep))))
+    return der
     #konvertera till tvåkomplements form
     #kolla längden på integern
     #lägg till typen integer
@@ -18,8 +22,8 @@ def convertShort(i, length):
 
 def convertLong(value, length):
     typeInt = '02'
-    size = len(length)/2
-    l =  toOct(binascii.hexlify(1 + binascii.unhexlify(toBin(size))))
+    size = intToHex(len(length)//2)
+    l =  toOct(binascii.hexlify(b'\1' + toBin(size,7)))
     return typeInt + l + value
 
 def DERToBase64(der):
@@ -32,6 +36,11 @@ def toOct(hexa):
     else:
         return '0' + hexa
 
+=======
+
+def toBin(hexa, nbrOfBits):
+    return bin(int(hexa, 16))[2:].zfill(nbrOfBits)
+
 def compute(p, q):
     version = 0
     e = 65537
@@ -40,8 +49,6 @@ def compute(p, q):
     ex1 = d % (p - 1) #exponent1 INTEGER, -- d mod (p-1)
     ex2 = d % (q - 1) #exponent2 INTEGER, -- d mod (q-1)
     coeff = ~q % p #coefficient INTEGER, -- (inverse of q) mod p
-
-
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -58,6 +65,10 @@ def intToByte(integer):
     four_bytes = integer.to_bytes(size, byteorder='big')
     return four_bytes
 
+def intToHex(i):
+    n = format(i,'08x')
+    return n
+
 def twos_complement(string):
     out = twos_comp(int(string,16), 32)
     return out
@@ -69,5 +80,7 @@ def twos_comp(val, bits):
         val = val - size
     return val
 
-print(twos_complement('0xFFFFFFFF'))
-print(convertShort(1234, '12'))
+#print(twos_complement('0xFFFFFFFF'))
+#print(convertShort(1234, '12'))
+print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
+#print(toBin('3f',7))
