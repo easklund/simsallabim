@@ -47,4 +47,9 @@ def intToByte(integer):
     four_bytes = integer.to_bytes(size, byteorder='big')
     return four_bytes
 
+def twos_complement(hexa_string):
+    out = twos_comp(int(hex_string,16), 32)
+    return out
+
+print(tows_complement('0xFFFFFFFF'))
 print(convertShort(1234, '12'))
