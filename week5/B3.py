@@ -56,10 +56,14 @@ def intToByte(integer):
     four_bytes = integer.to_bytes(size, byteorder='big')
     return four_bytes
 
-def twos_complement(input_value, num_bits):
-	'''Calculates a two's complement integer from the given input value's bits'''
-	mask = 2**(num_bits - 1)
-	return -(input_value & mask) + (input_value & ~mask)
+def twos_complement(hexa_string):
+    out = twos_comp(int(hexa_string,16), 32)
+    return out
+    
+def twos_comp(val, bits):
+    if (val & (1 << (bits - 1))) != 0:
+        val = val - (1 << bits)
+    return val
 
-print(tows_complement('0xFFFFFFFF'))
+print(twos_complement('0xFFFFFFFF'))
 print(convertShort(1234, '12'))
