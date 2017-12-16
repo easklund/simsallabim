@@ -48,8 +48,13 @@ def intToByte(integer):
     return four_bytes
 
 def twos_complement(hexa_string):
-    out = twos_comp(int(hex_string,16), 32)
+    out = twos_comp(int(hexa_string,16), 32)
     return out
+    
+def twos_comp(val, bits):
+    if (val & (1 << (bits - 1))) != 0:
+        val = val - (1 << bits)
+    return val
 
-print(tows_complement('0xFFFFFFFF'))
+print(twos_complement('0xFFFFFFFF'))
 print(convertShort(1234, '12'))
