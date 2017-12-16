@@ -19,8 +19,10 @@ def DERToBase64(der):
     base64form = b64encode(der)
     return base64form
 
-def twos_complement(hexa_string):
-    out = twos_comp(int(hex_string,16), 32)
-    return out
 
-print(tows_complement('0xFFFFFFFF'))
+def twos_complement(input_value, num_bits):
+	'''Calculates a two's complement integer from the given input value's bits'''
+	mask = 2**(num_bits - 1)
+	return -(input_value & mask) + (input_value & ~mask)
+
+print(twos_complement(100,3))
