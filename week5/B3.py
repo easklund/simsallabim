@@ -11,24 +11,16 @@ def convertToDER(integer):
     pass
 
 def convertShort(i, length):
-    # TLV where type is integer that has tag 2
     typeInt = hexToByte('02')
     l = hexToByte(length)
     value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
 def convertLong(value, length):
-    # TLV where type is integer that has tag 2
     typeInt = '02'
     size = len(length)/2
     l =  toOct(binascii.hexlify(1 + binascii.unhexlify(toBin(size))))
     return typeInt + l + value
-    #Kolla hur många octets vi ska ha
-    #1 sen hur många octets som följer som repreensterar längden
-    #restern va octeterna som respresenterar längden
-    #l = hexToByte(length)
-    #value = intToByte(i)
-    #return byteToHex(typeInt + l + value)
 
 def DERToBase64(der):
     base64form = b64encode(der)
@@ -39,6 +31,16 @@ def toOct(hexa):
         return hexa
     else:
         return '0' + hexa
+
+def compute(p, q):
+    version = 0
+    e = 65537
+    n = p * q
+    d = e**(-1)
+    ex1 = d % (p - 1) #exponent1 INTEGER, -- d mod (p-1)
+    ex2 = d % (q - 1) #exponent2 INTEGER, -- d mod (q-1)
+    coeff = ~q % p #coefficient INTEGER, -- (inverse of q) mod p
+
 
 
 def hexToByte(hexa):
@@ -56,8 +58,8 @@ def intToByte(integer):
     four_bytes = integer.to_bytes(size, byteorder='big')
     return four_bytes
 
-def twos_complement(hexa_string):
-    out = twos_comp(int(hexa_string,16), 32)
+def twos_complement(string):
+    out = twos_comp(int(string,16), 32)
     return out
 
 def twos_comp(val, bits):
