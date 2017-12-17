@@ -57,20 +57,36 @@ def compute(p, q):
     version = 0
     e = 65537
     n = p * q
-    d = e**(-1)
-    ex1 = d % (p - 1) #exponent1 INTEGER, -- d mod (p-1)
-    ex2 = d % (q - 1) #exponent2 INTEGER, -- d mod (q-1)
-    coeff = ~q % p #coefficient INTEGER, -- (inverse of q) mod p
+    d = int(e**(-1))
+    ex1 = int(d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
+    ex2 = int(d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
+    coeff = int(~q % p) #coefficient INTEGER, -- (inverse of q) mod p
     v1 = convertToDER(version)
-    e1 = convertToDER(e)
+    print("e: ", e)
+    print("coeff: ", coeff)
+    e1 = DER_encode_int(e)
     n1 = convertToDER(n)
     d1 = convertToDER(d)
-    ex11 = convertToDER(ex11)
-    ex21 = convertToDER(ex21)
-    c1 = convertToDER(c1)
+    ex11 = convertToDER(ex1)
+    ex21 = convertToDER(ex2)
+    c1 = DER_encode_int(coeff)
+    print("v: ", v1+e1+n1)
     value = v1+e1+n1+d1+ex11+ex21+c1
 
-    return hexToByte('30' + intToHex(lenValue(value)) + value)
+    # DER_encode_len(value)
+    # length = len(value)
+    # if length < 127:
+    #     lhex = intToByte(length//2)
+    # else:
+    #     leng = intToByte(length//2)
+    #     size = intToHex(len(leng))
+    #     l = '1' + toBin(size,7)
+    #     lhex= hex(int(l, 2))
+
+    print(value)
+    print('30')
+    lhex = intToHex(len(value))
+    return ('30' + lhex + value)
 
 
 def hexToByte(hexa):
