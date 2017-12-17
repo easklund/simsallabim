@@ -4,27 +4,13 @@ import binascii
 
 
 def convertToDER(integer):
-    #hexRep = intToHex(integer)
-    hexa = intToByte(integer)
-    print('hexa: ', byteToHex(hexa))
-    print(len(hexa))
+    hexa = convertValue(integer)
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
-        octRep = toOct(hexa)
-        return convertLong(octRep, len(hexa))
+        byteRep = hexToByte(hexa)
+        return convertLong(byteRep, len(hexa))
 
-    # print(octRep)
-    #
-    # print('octRep: ',toOct(intToHex(len(octRep))))
-    # der =
-    # return der
-    #konvertera till tvåkomplements form
-    #kolla längden på integern
-    #lägg till typen integer
-    #lägg till längden
-    #lägg till value
-    pass
 
 def convertShort(i, length):
     typeInt = hexToByte('02')
@@ -40,6 +26,13 @@ def convertLong(value, length): #length är en int
     l = '1' + toBin(size,7)
     lhex= hex(int(l, 2))
     return typeInt + lhex[2] + lhex[3] + byteToHex(leng) + byteToHex(value)
+
+def convertValue(value):
+    hexa = intToByte(value)
+    hexa = byteToHex(hexa)
+    if int(hexa[0],16) >= 8:
+        hexa = '00' + hexa
+    return hexa
 
 def DERToBase64(der):
     base64form = b64encode(der)
@@ -127,10 +120,11 @@ def hex2(x):
     return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
 
 #print(twos_complement('0xFFFFFFFF'))
-print(twos_comp(2530368937, 80))
+#print(twos_comp(1111, 4))
 #print(compute(2530368937, 2612592767))
 # print(DER_encode_int(3920879998437651233))
 # print(convertShort(3920879998437651233, len(intToByte(3920879998437651233))))
-#print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
+print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(toBin('3f',7))
+#print(convertValue(2530368937))
