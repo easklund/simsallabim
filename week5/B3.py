@@ -4,8 +4,14 @@ import binascii
 
 def convertToDER(integer):
     hexRep = intToHex(integer)
-    octRep = toOct(hexRep)
-    der = convertLong(octRep, toOct(intToHex(len(octRep))))
+    hexa = binascii.hexlify(intToByte(integer))
+    print(hexa)
+    print(len(hexa))
+    octRep = toOct(hexa)
+    print(octRep)
+
+    print('octRep: ',toOct(intToHex(len(octRep))))
+    der = convertLong(octRep, len(hexa)//2)
     return der
     #konvertera till tvåkomplements form
     #kolla längden på integern
@@ -21,11 +27,20 @@ def convertShort(i, length):
     value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
-def convertLong(value, length):
+def convertLong(value, length): #length är en int
     typeInt = '02'
-    size = intToHex(len(length)//2)
-    l =  toOct(binascii.hexlify(b'\1' + toBin(size,7)))
-    return typeInt + l + value
+    leng = binascii.hexlify(intToByte((length)))
+    print('leng: ', leng)
+    size = binascii.hexlify(intToByte(len(leng)//2))
+    #print(len(length)//2)
+    #l = toOct(intToHex(8 + len(length)//2))
+    print('size to bin: ', toBin(size,7))
+    l = '1' + toBin(size,7)
+    #l =  toOct(binascii.hexlify(b'\1' + hexToByte(toBin(size,7))))
+    print('l: ',l)
+    lhex= hex(int(l, 2))
+    print('lhex: ', lhex)
+    return typeInt + byteToHex(lhex) + value
 
 def DERToBase64(der):
     base64form = b64encode(der)
@@ -36,6 +51,7 @@ def toOct(hexa):
         return hexa
     else:
         return '0' + hexa
+
 
 def toBin(hexa, nbrOfBits):
     return bin(int(hexa, 16))[2:].zfill(nbrOfBits)
@@ -118,5 +134,6 @@ def hex2(x):
 print(compute(2530368937, 2612592767))
 print(DER_encode_int(3920879998437651233))
 print(convertShort(3920879998437651233, '08'))
+print(convertToDER(6610823582647678679))
 #print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(toBin('3f',7))
