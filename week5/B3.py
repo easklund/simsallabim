@@ -82,7 +82,7 @@ def intToByte(integer):
     size = (integer.bit_length() + 7 ) // 8
     if integer == 0:
         size = 1
-    four_bytes = integer.to_bytes(size, byteorder='big')
+    four_bytes = integer.to_bytes(size, byteorder='big', signed=True)
     return four_bytes
 
 def intToHex(i):
