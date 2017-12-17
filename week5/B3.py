@@ -70,7 +70,6 @@ def compute(p, q):
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
     c1 = DER_encode_int(coeff)
-    print("v: ", v1+e1+n1)
     value = v1+e1+n1+d1+ex11+ex21+c1
 
     # DER_encode_len(value)
@@ -83,7 +82,7 @@ def compute(p, q):
     #     l = '1' + toBin(size,7)
     #     lhex= hex(int(l, 2))
 
-    print(value)
+    print("value: ", value)
     print('30')
     lhex = intToHex(len(value))
     return ('30' + lhex + value)
