@@ -1,5 +1,6 @@
-from base64 import b64decode
+# from base64 import b64decode
 import binascii
+from base64 import b64encode
 
 def convertToDER(integer):
     hexa = convertValue(integer)
@@ -72,8 +73,8 @@ def compute(p, q):
     c1 = DER_encode_int(coeff)
     value = v1+e1+n1+d1+ex11+ex21+c1
 
-    # DER_encode_len(value)
-    # length = len(value)
+    lhex = DER_encode_len(len(value)//2)
+    # length = len(value) //2
     # if length < 127:
     #     lhex = intToByte(length//2)
     # else:
@@ -81,11 +82,17 @@ def compute(p, q):
     #     size = intToHex(len(leng))
     #     l = '1' + toBin(size,7)
     #     lhex= hex(int(l, 2))
-
+    # lhex = byteToHex(lhex)
     print("value: ", value)
     print('30')
-    lhex = intToHex(len(value))
-    return ('30' + lhex + value)
+    # lhex = intToHex(len(value))
+    print("lhex: ", lhex)
+
+    total = hexToByte('30' + lhex + value)
+    print("total: ", total)
+    coded = b64encode(total).decode('utf8')
+    print("coded: ", coded)
+    return coded
 
 
 def hexToByte(hexa):
