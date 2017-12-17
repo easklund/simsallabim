@@ -3,16 +3,20 @@ import binascii
 
 
 def convertToDER(integer):
-    hexRep = intToHex(integer)
-    hexa = binascii.hexlify(intToByte(integer))
-    print(hexa)
+    #hexRep = intToHex(integer)
+    hexa = intToByte(integer)
+    print('hexa: ', byteToHex(hexa))
     print(len(hexa))
-    octRep = toOct(hexa)
-    print(octRep)
-
-    print('octRep: ',toOct(intToHex(len(octRep))))
-    der = convertLong(octRep, len(hexa)//2)
-    return der
+    if len(hexa) < 127:
+        return convertShort(integer, len(hexa))
+    else:
+        return convertLong(octRep, len(hexa)//2)
+    # octRep = toOct(hexa)
+    # print(octRep)
+    #
+    # print('octRep: ',toOct(intToHex(len(octRep))))
+    # der =
+    # return der
     #konvertera till tvåkomplements form
     #kolla längden på integern
     #lägg till typen integer
@@ -29,10 +33,10 @@ def convertShort(i, length):
 
 def convertLong(value, length): #length är en int
     typeInt = '02'
-    leng = binascii.hexlify(intToByte((length)))
+    leng = intToByte((length))
     print('leng: ', leng)
     size = binascii.hexlify(intToByte(len(leng)//2))
-    #print(len(length)//2)
+    #print('längden',len(length)//2)
     #l = toOct(intToHex(8 + len(length)//2))
     print('size to bin: ', toBin(size,7))
     l = '1' + toBin(size,7)
