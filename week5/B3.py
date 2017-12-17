@@ -38,8 +38,8 @@ def convertLong(value, length): #length är en int
     #l =  toOct(binascii.hexlify(b'\1' + hexToByte(toBin(size,7))))
     print('l: ',l)
     lhex= hex(int(l, 2))
-    print('lhex: ', lhex)
-    return typeInt + byteToHex(lhex) + value
+    print('lhex: ', hexToByte(lhex))
+    return typeInt + hexToByte(lhex) + value
 
 def DERToBase64(der):
     base64form = b64encode(der)
