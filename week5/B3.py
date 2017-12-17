@@ -2,6 +2,7 @@ from base64 import b64decode
 import binascii
 
 
+
 def convertToDER(integer):
     #hexRep = intToHex(integer)
     hexa = intToByte(integer)
@@ -10,8 +11,9 @@ def convertToDER(integer):
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
-        return convertLong(octRep, len(hexa)//2)
-    # octRep = toOct(hexa)
+        octRep = toOct(hexa)
+        return convertLong(octRep, len(hexa))
+
     # print(octRep)
     #
     # print('octRep: ',toOct(intToHex(len(octRep))))
@@ -34,17 +36,10 @@ def convertShort(i, length):
 def convertLong(value, length): #length är en int
     typeInt = '02'
     leng = intToByte((length))
-    print('leng: ', leng)
-    size = binascii.hexlify(intToByte(len(leng)//2))
-    #print('längden',len(length)//2)
-    #l = toOct(intToHex(8 + len(length)//2))
-    print('size to bin: ', toBin(size,7))
+    size = binascii.hexlify(intToByte(len(leng)))
     l = '1' + toBin(size,7)
-    #l =  toOct(binascii.hexlify(b'\1' + hexToByte(toBin(size,7))))
-    print('l: ',l)
     lhex= hex(int(l, 2))
-    print('lhex: ', lhex)
-    return typeInt + lhex[2] + lhex[3] + byteToHex(value)
+    return typeInt + lhex[2] + lhex[3] + byteToHex(leng) + byteToHex(value)
 
 def DERToBase64(der):
     base64form = b64encode(der)
@@ -132,9 +127,10 @@ def hex2(x):
     return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
 
 #print(twos_complement('0xFFFFFFFF'))
-print(compute(2530368937, 2612592767))
+print(twos_comp(2530368937, 80))
+#print(compute(2530368937, 2612592767))
 # print(DER_encode_int(3920879998437651233))
 # print(convertShort(3920879998437651233, len(intToByte(3920879998437651233))))
-# print(convertToDER(6610823582647678679))
+#print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(toBin('3f',7))
