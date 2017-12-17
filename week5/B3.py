@@ -22,7 +22,7 @@ def convertToDER(integer):
 
 def convertShort(i, length):
     typeInt = hexToByte('02')
-    l = hexToByte(length)
+    l = intToByte(length)
     i = twos_complement(i)
     value = intToByte(i)
     return byteToHex(typeInt + l + value)
@@ -40,7 +40,7 @@ def convertLong(value, length): #length är en int
     print('l: ',l)
     lhex= hex(int(l, 2))
     print('lhex: ', lhex)
-    return typeInt + byteToHex(lhex) + value
+    return typeInt + lhex[2] + lhex[3] + byteToHex(value)
 
 def DERToBase64(der):
     base64form = b64encode(der)
@@ -52,12 +52,11 @@ def toOct(hexa):
     else:
         return '0' + hexa
 
-
 def toBin(hexa, nbrOfBits):
     return bin(int(hexa, 16))[2:].zfill(nbrOfBits)
 
 def lenValue(value):
-    return '3c0201'
+    return len(intToByte(value))
 
 def compute(p, q):
     version = 0
@@ -76,7 +75,7 @@ def compute(p, q):
     c1 = convertToDER(c1)
     value = v1+e1+n1+d1+ex11+ex21+c1
 
-    return hexToByte('30' + lenValue(value) + value)
+    return hexToByte('30' + intToHex(lenValue(value)) + value)
 
 
 def hexToByte(hexa):
@@ -109,8 +108,6 @@ def twos_comp(val, bits):
         val = val - size
     return val
 
-
-
 #Antons:
 def DER_encode_len(l):
     l_hex = hex2(l)
@@ -132,8 +129,8 @@ def hex2(x):
 
 #print(twos_complement('0xFFFFFFFF'))
 print(compute(2530368937, 2612592767))
-print(DER_encode_int(3920879998437651233))
-print(convertShort(3920879998437651233, '08'))
-print(convertToDER(6610823582647678679))
+# print(DER_encode_int(3920879998437651233))
+# print(convertShort(3920879998437651233, len(intToByte(3920879998437651233))))
+# print(convertToDER(6610823582647678679))
 #print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 #print(toBin('3f',7))
