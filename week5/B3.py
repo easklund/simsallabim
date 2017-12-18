@@ -4,7 +4,11 @@ import binascii
 
 
 def convertToDER(integer):
-    hexa = convertValue(integer)
+    #hexa = convertValue(integer)
+    hexa = intToByte(integer)
+    hexa2 = twos_complement(integer)
+    print('hexa: ', hexa)
+    print('hexa2: ', hexa2)
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
