@@ -4,19 +4,24 @@ import binascii
 def convertToDER(integer):
     hexa = convertValue(integer)
     if len(hexa) < 127:
-        return convertShort(integer, len(hexa))
+        return convertShort(integer, len(hexa)//2)
     else:
         byteRep = hexToByte(hexa)
         # print("byteRep: ", hexa)
         return convertLong(byteRep, len(hexa))
 
+def hex2(x):
+    return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
+
 def convertShort(i, length):
-    print("short")
+    # print("short")
     typeInt = hexToByte('02')
     l = intToByte(length)
-    i = toOct(intToHex(i))
+    # i = toOct(intToHex(i))
 
-    value = hexToByte(i)
+    i_hex = convertValue(i)
+
+    value = hexToByte(i_hex)
     # value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
@@ -86,7 +91,7 @@ def compute(p, q):
     print(v1)
 
     value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
-    print("value:", value)
+    print("value: ", value)
     # return hexToByte('30' + len(value) + value)
 
 # function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
