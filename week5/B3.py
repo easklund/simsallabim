@@ -8,24 +8,25 @@ def convertToDER(integer):
         return convertShort(integer, len(hexa))
     else:
         byteRep = hexToByte(hexa)
-        # print("byteRep: ", hexa)
         return convertLong(byteRep, len(hexa))
 
 def convertShort(i, length):
     typeInt = hexToByte('02')
     l = intToByte(length//2)
-    i = twos_complement(i)
-    value = intToByte(i)
+    i = toOct(intToHex(i))
+    # i = twos_complement(i)
+    print("v", i)
+    print("m", hex(i[0]))
+    value = hexToByte(i)
+    # value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
 def convertLong(value, length): #length är en int
     typeInt = '02'
     leng = intToByte(length//2)
-    # print("leng: ", leng)
     size = intToHex(len(leng))
     l = '1' + toBin(size,7)
     lhex= hex(int(l, 2))
-    # print("lhex: ", lhex)
     return typeInt + lhex[2:] + byteToHex(leng) + byteToHex(value)
 
 def byteToInt(i):
@@ -58,42 +59,36 @@ def compute(p, q):
     version = 0
     e = 65537
     n = p * q
-    d = int(e**(-1))
-    ex1 = int(d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
-    ex2 = int(d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
-    coeff = int(~q % p) #coefficient INTEGER, -- (inverse of q) mod p
+    d = mulinv(e, (p - 1) * (q - 1))
+    coeff = mulinv(q, p)
+    print("c: ", coeff)
+    # d = int(e**(-1))
+    ex1 = (d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
+    ex2 = (d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
+    coeff1 = (~q % p) #coefficient INTEGER, -- (inverse of q) mod p
+    print("c1: ", coeff1)
     v1 = convertToDER(version)
-    print("e: ", e)
-    print("coeff: ", coeff)
-    e1 = DER_encode_int(e)
     n1 = convertToDER(n)
+    e1 = convertToDER(e)
     d1 = convertToDER(d)
+    p1 = convertToDER(p)
+    q1 = convertToDER(q)
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
-    c1 = DER_encode_int(coeff)
-    value = v1+e1+n1+d1+ex11+ex21+c1
-
+    c1 = convertToDER(coeff)
+    value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
     lhex = DER_encode_len(len(value)//2)
-    # length = len(value) //2
-    # if length < 127:
-    #     lhex = intToByte(length//2)
-    # else:
-    #     leng = intToByte(length//2)
-    #     size = intToHex(len(leng))
-    #     l = '1' + toBin(size,7)
-    #     lhex= hex(int(l, 2))
-    # lhex = byteToHex(lhex)
+    #räkna ut längden
     print("value: ", value)
-    print('30')
+    # print('30')
     # lhex = intToHex(len(value))
-    print("lhex: ", lhex)
+    # print("lhex: ", lhex)
 
     total = hexToByte('30' + lhex + value)
-    print("total: ", total)
+    # print("total: ", ('30' + lhex + value))
     coded = b64encode(total).decode('utf8')
-    print("coded: ", coded)
+    # print("coded: ", coded)
     return coded
-
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -111,7 +106,7 @@ def intToByte(integer):
     return four_bytes
 
 def intToHex(i):
-    n = format(i,'08x')
+    n = binascii.hexlify(intToByte(i))
     return n
 
 def twos_complement(string):
@@ -145,9 +140,22 @@ def DER_encode_int(i):
 def hex2(x):
     return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
 
+def mulinv(b, n):
+    g, x = extendex_euc_alg(b, n)
+    if g == 1:
+        return x % n
+
+def extendex_euc_alg(x, n):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while n != 0:
+        q, x, n = x // n, n, x % n
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+    return  x, x0
+
 #print(twos_complement('0xFFFFFFFF'))
 #print(twos_comp(1111, 4))
-print(compute(2530368937, 2612592767))
+(compute(2530368937, 2612592767))
 # print("int1: ", DER_encode_int(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 # print(convertShort(3920879998437651233, len(intToByte(3920879998437651233))))
 # print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
