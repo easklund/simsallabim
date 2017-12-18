@@ -31,8 +31,7 @@ def convertPQ(value, length): #length är en int
     print("long")
     typeInt = '30'
     leng = intToByte(length//2)
-    l = intToHex(len(leng))
-    return typeInt + byteToHex(leng) + byteToHex(value)
+    return hexToByte(typeInt) + leng + value
 
 def byteToInt(i):
     return int.from_bytes(i, byteorder='big', signed=True)
@@ -85,11 +84,8 @@ def compute(p, q):
 
     byteRep = hexToByte(value)
     total = convertPQ(byteRep, len(value))
-
-    print("total: ", total)
-
-    # coded = DERToBase64(hexToByte(value))
-    # print("c:", coded)
+    coded = DERToBase64(total)
+    print("c:", coded)
     # return hexToByte('30' + len(value) + value)
 
 # function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm

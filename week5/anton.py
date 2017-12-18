@@ -49,9 +49,8 @@ def calc_priv_key(p, q, e, version = 0):
     priv_key = map(DER_encode_int, [version, n, e, d, p, q, exp1, exp2, coeff])
     # print("value: ", ''.join(priv_key))
     cert = DER_encode_seq(''.join(priv_key))
-    print("total: ", byteToHex(cert))
     enc_cert = b64encode(cert).decode('utf8')
-    # print("c:", enc_cert)
+    print("c:", enc_cert)
     key_out = ''.join(['\n' * (i % 64 == 0 and i != 0) + s for i, s in enumerate(enc_cert)])
     return enc_cert, key_out # 64 characters per line
 
