@@ -32,9 +32,7 @@ def convertPQ(value, length): #length är en int
     typeInt = '30'
     leng = intToByte(length//2)
     l = intToHex(len(leng))
-    # l = '1' + toBin(size,7)
-    lhex= hex(int(l, 2))
-    return typeInt + lhex[2:] + byteToHex(leng) + byteToHex(value)
+    return typeInt + byteToHex(leng) + byteToHex(value)
 
 def byteToInt(i):
     return int.from_bytes(i, byteorder='big', signed=True)
