@@ -7,8 +7,6 @@ def convertToDER(integer):
     #hexa = convertValue(integer)
     hexa = intToByte(integer)
     hexa2 = twos_complement(integer)
-    print('hexa: ', hexa)
-    print('hexa2: ', hexa2)
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
@@ -69,9 +67,9 @@ def compute(p, q):
     ex1 = int(d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
     ex2 = int(d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
     coeff = mulinv(q,p) #coefficient INTEGER, -- (inverse of q) mod p
-    #coeff = modinv(p,q)
+
     v1 = convertToDER(version)
-    e1 = DER_encode_int(e)
+    e1 = convertToDER(e)
     n1 = convertToDER(n)
     e1 = convertToDER(e)
     d1 = convertToDER(d)
@@ -80,7 +78,8 @@ def compute(p, q):
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
     c1 = convertToDER(coeff)
-    value = v1+e1+n1+d1+ex11+ex21+c1
+
+    value = v1+n1+e1+p1+q1+d1+ex11+ex21+c1
     lhex = DER_encode_len(len(value)//2)
     print("value: ", value)
     print("lhex: ", lhex)
@@ -122,7 +121,7 @@ def intToByte(integer):
     return four_bytes
 
 def intToHex(i):
-    n = binascii.hexlify(i)
+    n = binascii.hexlify(intToByte(i))
     return n
 
 def twos_complement(string):
