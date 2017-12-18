@@ -2,8 +2,13 @@
 import binascii
 from base64 import b64encode
 
+
 def convertToDER(integer):
-    hexa = convertValue(integer)
+    #hexa = convertValue(integer)
+    hexa = intToByte(integer)
+    hexa2 = twos_complement(integer)
+    print('hexa: ', hexa)
+    print('hexa2: ', hexa2)
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
@@ -59,15 +64,14 @@ def compute(p, q):
     version = 0
     e = 65537
     n = p * q
-    d = mulinv(e, (p - 1) * (q - 1))
-    coeff = mulinv(q, p)
-    print("c: ", coeff)
-    # d = int(e**(-1))
-    ex1 = (d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
-    ex2 = (d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
-    coeff1 = (~q % p) #coefficient INTEGER, -- (inverse of q) mod p
-    print("c1: ", coeff1)
+    phi = (p-1)*(q-1)
+    d = mulinv(e, phi)
+    ex1 = int(d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
+    ex2 = int(d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
+    coeff = mulinv(q,p) #coefficient INTEGER, -- (inverse of q) mod p
+    #coeff = modinv(p,q)
     v1 = convertToDER(version)
+    e1 = DER_encode_int(e)
     n1 = convertToDER(n)
     e1 = convertToDER(e)
     d1 = convertToDER(d)
@@ -76,19 +80,31 @@ def compute(p, q):
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
     c1 = convertToDER(coeff)
-    value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
+    value = v1+e1+n1+d1+ex11+ex21+c1
     lhex = DER_encode_len(len(value)//2)
-    #räkna ut längden
     print("value: ", value)
-    # print('30')
-    # lhex = intToHex(len(value))
-    # print("lhex: ", lhex)
-
+    print("lhex: ", lhex)
     total = hexToByte('30' + lhex + value)
     # print("total: ", ('30' + lhex + value))
     coded = b64encode(total).decode('utf8')
     # print("coded: ", coded)
     return coded
+
+# function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
+def xgcd(b, n):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while n != 0:
+        q, b, n = b // n, n, b % n
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+    return  b, x0, y0
+
+# function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
+def mulinv(b, n):
+    g, x, _ = xgcd(b, n)
+    if g == 1:
+        return x % n
+
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -106,7 +122,7 @@ def intToByte(integer):
     return four_bytes
 
 def intToHex(i):
-    n = binascii.hexlify(intToByte(i))
+    n = binascii.hexlify(i)
     return n
 
 def twos_complement(string):
