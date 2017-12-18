@@ -2,6 +2,7 @@
 import binascii
 from base64 import b64encode
 
+
 def convertToDER(integer):
     #hexa = convertValue(integer)
     hexa = intToByte(integer)
@@ -62,13 +63,13 @@ def compute(p, q):
     version = 0
     e = 65537
     n = p * q
-    d = int(e**(-1))
+    phi = (p-1)*(q-1)
+    d = mulinv(e, phi)
     ex1 = int(d % (p - 1)) #exponent1 INTEGER, -- d mod (p-1)
     ex2 = int(d % (q - 1)) #exponent2 INTEGER, -- d mod (q-1)
-    coeff = int(~q % p) #coefficient INTEGER, -- (inverse of q) mod p
+    coeff = mulinv(q,p) #coefficient INTEGER, -- (inverse of q) mod p
+    #coeff = modinv(p,q)
     v1 = convertToDER(version)
-    print("e: ", e)
-    print("coeff: ", coeff)
     e1 = DER_encode_int(e)
     n1 = convertToDER(n)
     d1 = convertToDER(d)
@@ -76,27 +77,29 @@ def compute(p, q):
     ex21 = convertToDER(ex2)
     c1 = DER_encode_int(coeff)
     value = v1+e1+n1+d1+ex11+ex21+c1
-
     lhex = DER_encode_len(len(value)//2)
-    # length = len(value) //2
-    # if length < 127:
-    #     lhex = intToByte(length//2)
-    # else:
-    #     leng = intToByte(length//2)
-    #     size = intToHex(len(leng))
-    #     l = '1' + toBin(size,7)
-    #     lhex= hex(int(l, 2))
-    # lhex = byteToHex(lhex)
     print("value: ", value)
-    print('30')
-    # lhex = intToHex(len(value))
     print("lhex: ", lhex)
-
     total = hexToByte('30' + lhex + value)
     print("total: ", total)
     coded = b64encode(total).decode('utf8')
     print("coded: ", coded)
     return coded
+
+# function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
+def xgcd(b, n):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while n != 0:
+        q, b, n = b // n, n, b % n
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+    return  b, x0, y0
+
+# function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
+def mulinv(b, n):
+    g, x, _ = xgcd(b, n)
+    if g == 1:
+        return x % n
 
 
 def hexToByte(hexa):
@@ -115,7 +118,7 @@ def intToByte(integer):
     return four_bytes
 
 def intToHex(i):
-    n = format(i,'08x')
+    n = binascii.hexlify(i)
     return n
 
 def twos_complement(string):
