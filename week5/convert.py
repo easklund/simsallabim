@@ -1,4 +1,5 @@
 from base64 import b64decode
+from base64 import b64encode
 import binascii
 
 def convertToDER(integer):
@@ -7,39 +8,32 @@ def convertToDER(integer):
         return convertShort(integer, len(hexa)//2)
     else:
         byteRep = hexToByte(hexa)
-        # print("byteRep: ", hexa)
         return convertLong(byteRep, len(hexa))
 
-def hex2(x):
-    return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
-
 def convertShort(i, length):
-    # print("short")
     typeInt = hexToByte('02')
     l = intToByte(length)
-    # i = toOct(intToHex(i))
-
     i_hex = convertValue(i)
-
     value = hexToByte(i_hex)
-    # value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
-    # typeInt = hexToByte('02')
-    # l = intToByte(length//2)
-    # i = twos_complement(i)
-    # value = intToByte(i)
-    # return byteToHex(typeInt + l + value)
 
 def convertLong(value, length): #length är en int
     print("long")
     typeInt = '02'
     leng = intToByte(length//2)
-    # print("leng: ", leng)
     size = intToHex(len(leng))
     l = '1' + toBin(size,7)
     lhex= hex(int(l, 2))
-    # print("lhex: ", lhex)
+    return typeInt + lhex[2:] + byteToHex(leng) + byteToHex(value)
+
+def convertPQ(value, length): #length är en int
+    print("long")
+    typeInt = '30'
+    leng = intToByte(length//2)
+    l = intToHex(len(leng))
+    # l = '1' + toBin(size,7)
+    lhex= hex(int(l, 2))
     return typeInt + lhex[2:] + byteToHex(leng) + byteToHex(value)
 
 def byteToInt(i):
@@ -53,7 +47,7 @@ def convertValue(value):
     return hexa
 
 def DERToBase64(der):
-    base64form = b64encode(der)
+    base64form = b64encode(der).decode('utf8')
     return base64form
 
 def toOct(hexa):
@@ -88,10 +82,16 @@ def compute(p, q):
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
     c1 = convertToDER(coeff)
-    print(v1)
 
     value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
-    print("value: ", value)
+
+    byteRep = hexToByte(value)
+    total = convertPQ(byteRep, len(value))
+
+    print("total: ", total)
+
+    # coded = DERToBase64(hexToByte(value))
+    # print("c:", coded)
     # return hexToByte('30' + len(value) + value)
 
 # function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
@@ -128,10 +128,6 @@ def intToHex(i):
     n = binascii.hexlify(intToByte(i))
     return n
 
-#def intToHex(i):
-#    n = format(i,'08x')
-#    return n
-
 def twos_complement(string):
     out = twos_comp(string, 32)
     return out
@@ -142,26 +138,6 @@ def twos_comp(val, bits):
         size = 1 << bits
         val = val - size
     return val
-
-#Antons:
-def DER_encode_len(l):
-    l_hex = hex2(l)
-    # print("l: ", l_hex)
-    if l >= 0x80:
-        l_hex = '8' + str(len(l_hex) // 2) +  l_hex
-    return l_hex
-
-def DER_encode_int(i):
-    i_hex = hex2(i)
-    if int(i_hex[0], 16) >= 0b1000:
-        i_hex = '00' +  i_hex
-    # print("i_hex: ", i_hex)
-    l_hex = DER_encode_len(len(i_hex) // 2)
-    # print("antons lhex: ", l_hex)
-    return '02' + l_hex + i_hex
-
-def hex2(x):
-    return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
 
 #print(twos_complement('0xFFFFFFFF'))
 #print(twos_comp(1111, 4))

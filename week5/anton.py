@@ -1,5 +1,6 @@
 from base64 import b64encode
 from binascii import unhexlify
+import binascii
 
 def extendex_euc_alg(x, n):
     x0, x1, y0, y1 = 1, 0, 0, 1
@@ -34,7 +35,9 @@ def DER_encode_int(i):
 def DER_encode_seq(seq):
     l_hex = DER_encode_len(len(seq) // 2)
     return unhexlify('30' + l_hex + seq) # 30 = sequence
-
+def byteToHex(byte):
+    hexa = binascii.hexlify(byte).decode('utf-8')
+    return hexa
 def calc_priv_key(p, q, e, version = 0):
     n = p * q
     d = mulinv(e, (p - 1) * (q - 1))
@@ -42,13 +45,13 @@ def calc_priv_key(p, q, e, version = 0):
     exp2 = d % (q - 1)
     coeff = mulinv(q, p)
     # print("e: ", DER_encode_int(e))
-    print("e: ", DER_encode_int(coeff))
+    # print("e: ", DER_encode_int(coeff))
     priv_key = map(DER_encode_int, [version, n, e, d, p, q, exp1, exp2, coeff])
-    print("value: ", ''.join(priv_key))
+    # print("value: ", ''.join(priv_key))
     cert = DER_encode_seq(''.join(priv_key))
-    # print("total: ", cert)
+    print("total: ", byteToHex(cert))
     enc_cert = b64encode(cert).decode('utf8')
-    # print("coded: ", enc_cert)
+    # print("c:", enc_cert)
     key_out = ''.join(['\n' * (i % 64 == 0 and i != 0) + s for i, s in enumerate(enc_cert)])
     return enc_cert, key_out # 64 characters per line
 
