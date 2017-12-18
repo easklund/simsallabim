@@ -1,21 +1,14 @@
-# from base64 import b64decode
+from base64 import b64decode
 import binascii
-from base64 import b64encode
-
 
 def convertToDER(integer):
-    #hexa = convertValue(integer)
-    hexa = intToHex(integer)
-    print("hexa", hexa)
-    hexa2 = twos_complement(integer)
+    hexa = convertValue(integer)
     if len(hexa) < 127:
         return convertShort(integer, len(hexa))
     else:
-        print('hexa: ', hexa)
-        print('length hexa: ', len(hexa))
-        # byteRep = hexToByte(hexa)
-        # print('byteRep: ', byteRep)
-        return convertLong(hexa, len(hexa))
+        byteRep = hexToByte(hexa)
+        # print("byteRep: ", hexa)
+        return convertLong(byteRep, len(hexa))
 
 def convertShort(i, length):
     print("short")
@@ -27,16 +20,22 @@ def convertShort(i, length):
     # value = intToByte(i)
     return byteToHex(typeInt + l + value)
 
+    # typeInt = hexToByte('02')
+    # l = intToByte(length//2)
+    # i = twos_complement(i)
+    # value = intToByte(i)
+    # return byteToHex(typeInt + l + value)
+
 def convertLong(value, length): #length är en int
     print("long")
     typeInt = '02'
-    size = binascii.hexlify(intToByte(len(leng)//2))
     leng = intToByte(length//2)
-    print('leng: ',leng)
+    # print("leng: ", leng)
     size = intToHex(len(leng))
     l = '1' + toBin(size,7)
     lhex= hex(int(l, 2))
-    return typeInt + lhex[2:] + byteToHex(value)
+    # print("lhex: ", lhex)
+    return typeInt + lhex[2:] + byteToHex(leng) + byteToHex(value)
 
 def byteToInt(i):
     return int.from_bytes(i, byteorder='big', signed=True)
@@ -84,17 +83,11 @@ def compute(p, q):
     ex11 = convertToDER(ex1)
     ex21 = convertToDER(ex2)
     c1 = convertToDER(coeff)
-    print("e: ", v1)
-    value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
+    print(v1)
 
-    lhex = DER_encode_len(len(value)//2)
-    print("value: ", value)
-    print("lhex: ", lhex)
-    total = hexToByte('30' + lhex + value)
-    # print("total: ", ('30' + lhex + value))
-    coded = b64encode(total).decode('utf8')
-    # print("coded: ", coded)
-    return coded
+    value = v1+n1+e1+d1+p1+q1+ex11+ex21+c1
+    print("value:", value)
+    # return hexToByte('30' + len(value) + value)
 
 # function taken from https://en.wikibooks.org/wiki/Algorithm_Implementation/Mathematics/Extended_Euclidean_algorithm
 def xgcd(b, n):
@@ -110,7 +103,6 @@ def mulinv(b, n):
     g, x, _ = xgcd(b, n)
     if g == 1:
         return x % n
-
 
 def hexToByte(hexa):
     d = binascii.unhexlify(hexa)
@@ -130,6 +122,10 @@ def intToByte(integer):
 def intToHex(i):
     n = binascii.hexlify(intToByte(i))
     return n
+
+#def intToHex(i):
+#    n = format(i,'08x')
+#    return n
 
 def twos_complement(string):
     out = twos_comp(string, 32)
@@ -162,25 +158,13 @@ def DER_encode_int(i):
 def hex2(x):
     return '{}{:x}'.format('0' * (len(hex(x)) % 2), x)
 
-def mulinv(b, n):
-    g, x = extendex_euc_alg(b, n)
-    if g == 1:
-        return x % n
-
-def extendex_euc_alg(x, n):
-    x0, x1, y0, y1 = 1, 0, 0, 1
-    while n != 0:
-        q, x, n = x // n, n, x % n
-        x0, x1 = x1, x0 - q * x1
-        y0, y1 = y1, y0 - q * y1
-    return  x, x0
-
 #print(twos_complement('0xFFFFFFFF'))
 #print(twos_comp(1111, 4))
-# (compute(2530368937, 2612592767))
+(compute(2530368937, 2612592767))
 # print("int1: ", DER_encode_int(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 # print(convertShort(3920879998437651233, len(intToByte(3920879998437651233))))
-#print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
+# print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
 # print("int2: ", convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
-print(convertToDER(161863091426469985001358176493540241719547661391527305133576978132107887717901972545655469921112454527920502763568908799229786534949082469136818503316047702610019730504769581772016806386178260077157969035841180863069299401978140025225333279044855057641079117234814239380100022886557142183337228046784055073741))
+# print("hej: ", convertToDER(6610823582647678679))
 #print(toBin('3f',7))
+#print(convertValue(2530368937))
